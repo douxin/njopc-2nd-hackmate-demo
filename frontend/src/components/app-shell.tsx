@@ -101,17 +101,12 @@ export function AppShell() {
                 </Button>
               </>
             ) : (
-              <>
-                <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
-                  <Link to="/login">登录</Link>
-                </Button>
-                <Button asChild size="sm">
-                  <Link to="/login">
-                    登录 / 注册
-                    <Plus className="hidden xl:block" />
-                  </Link>
-                </Button>
-              </>
+              <Button asChild size="sm">
+                <Link to="/login">
+                  登录 / 注册
+                  <Plus className="hidden xl:block" />
+                </Link>
+              </Button>
             )}
           </div>
         </div>
