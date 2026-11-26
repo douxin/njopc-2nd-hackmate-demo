@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 0 0% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 4%;
+    --primary: 239 84% 67%;
+    --primary-hover: 243 75% 59%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 12% 96%;
+    --secondary-foreground: 0 0% 4%;
+    --muted: 240 12% 96%;
+    --muted-foreground: 0 0% 42%;
+    --accent: 239 84% 96%;
+    --accent-foreground: 239 84% 40%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 12% 92%;
+    --input: 240 12% 92%;
+    --ring: 239 84% 67%;
+    --success: 160 84% 39%;
+    --warning: 38 92% 50%;
+    --error: 0 84% 60%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  ::selection {
+    background: rgba(99, 102, 241, 0.18);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: "General Sans", "DM Sans", ui-sans-serif, sans-serif;
+    letter-spacing: -0.035em;
+  }
+
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer components {
+  .dot-grid {
+    background-image: radial-gradient(circle at 1px 1px, rgba(10, 10, 10, 0.13) 1px, transparent 0);
+    background-size: 18px 18px;
+  }
+
+  .dot-grid-soft {
+    background-image: radial-gradient(circle at 1px 1px, rgba(10, 10, 10, 0.075) 1px, transparent 0);
+    background-size: 18px 18px;
+  }
+
+  .dot-grid-indigo {
+    background-image: radial-gradient(circle at 1px 1px, rgba(99, 102, 241, 0.24) 1px, transparent 0);
+    background-size: 18px 18px;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .eyebrow {
+    @apply font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground;
+  }
+
+  .focus-ring {
+    @apply outline-none focus-visible:ring-[3px] focus-visible:ring-primary/15 focus-visible:border-primary;
+  }
+
+  .soft-divider {
+    @apply border-t border-border;
+  }
+
+  .page-shell {
+    @apply mx-auto w-full max-w-[1280px] px-6;
+  }
+}
+
+@layer utilities {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* A quiet, editorial scrollbar. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  border: 3px solid hsl(var(--background));
+  border-radius: 999px;
+  background: #d6d6dc;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b8b8c2;
+}
