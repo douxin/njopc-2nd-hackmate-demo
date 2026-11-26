@@ -18,6 +18,10 @@
 
 前端使用 reactjs, vitejs, typescript, tailwindcss, shadcn/ui, lucide-react。 
 
+## 产品设计
+
+- 产品的设计风格为 `@DESIGN.md`，遵守其中的要求来设计本产品
+
 ## 本阶段实现要求
 
 - `@docs/idea.md` 中提到的在组队时可以上传文件、图片、视频等，这个功能目前不需要实现，其他功能本阶段都需要实现
