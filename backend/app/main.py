@@ -552,28 +552,46 @@ def apply_to_team(
     user: dict[str, Any] = Depends(required_user),
     conn: sqlite3.Connection = Depends(get_db),
 ) -> dict[str, Any]:
-    team = get_team_or_404(conn, team_id)
-    if membership_for(conn, int(user["id"])):
-        raise HTTPException(status_code=409, detail="你已加入一支队伍，无法申请其他队伍")
-    if team["status"] != "recruiting":
-        raise HTTPException(status_code=409, detail="该队伍已完成组队，暂不接受申请")
+    get_team_or_404(conn, team_id)
     role = conn.execute(
         "SELECT * FROM team_roles WHERE id = ? AND team_id = ?", (payload.role_id, team_id)
     ).fetchone()
     if not role:
         raise HTTPException(status_code=400, detail="请选择该队伍的招募角色")
-    previous = latest_application(conn, int(user["id"]), team_id)
-    if previous and previous["status"] == "pending":
-        raise HTTPException(status_code=409, detail="你已提交过申请，正在等待队长审核")
+
     stamp = now_iso()
-    cursor = conn.execute(
-        """INSERT INTO applications
-        (team_id, applicant_id, role_id, role_name, message, status, rejection_reason, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, 'pending', NULL, ?, ?)""",
-        (team_id, user["id"], payload.role_id, role["name"], payload.message, stamp, stamp),
-    )
-    conn.execute("UPDATE teams SET updated_at = ? WHERE id = ?", (stamp, team_id))
-    conn.commit()
+    try:
+        # Serialize the business checks and the insert. SQLite's write lock ensures
+        # two concurrent submissions cannot both observe "no pending application".
+        conn.execute("BEGIN IMMEDIATE")
+        current_team = conn.execute("SELECT status FROM teams WHERE id = ?", (team_id,)).fetchone()
+        if current_team is None:
+            raise HTTPException(status_code=404, detail="队伍不存在或已下线")
+        if current_team["status"] != "recruiting":
+            raise HTTPException(status_code=409, detail="该队伍已完成组队，暂不接受申请")
+        if membership_for(conn, int(user["id"])):
+            raise HTTPException(status_code=409, detail="你已加入一支队伍，无法申请其他队伍")
+        previous = latest_application(conn, int(user["id"]), team_id)
+        if previous and previous["status"] == "pending":
+            raise HTTPException(status_code=409, detail="你已提交过申请，正在等待队长审核")
+        cursor = conn.execute(
+            """INSERT INTO applications
+            (team_id, applicant_id, role_id, role_name, message, status, rejection_reason, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, 'pending', NULL, ?, ?)""",
+            (team_id, user["id"], payload.role_id, role["name"], payload.message, stamp, stamp),
+        )
+        conn.execute("UPDATE teams SET updated_at = ? WHERE id = ?", (stamp, team_id))
+        conn.commit()
+    except HTTPException:
+        conn.rollback()
+        raise
+    except sqlite3.IntegrityError:
+        conn.rollback()
+        raise HTTPException(status_code=409, detail="你已提交过申请，正在等待队长审核") from None
+    except Exception:
+        conn.rollback()
+        raise
+
     application_id = int(cursor.lastrowid)
     return {
         "message": "申请已提交，正在等待队长审核",

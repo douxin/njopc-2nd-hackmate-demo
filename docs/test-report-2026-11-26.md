@@ -7,7 +7,7 @@
 | 被测提交 | `570a3021ef576d9b59999a5f2858eae2f6e54f5f` |
 | 测试依据 | `docs/test-cases.md`（152 条用例）、`README.md`、`DESIGN.md`、`AGENTS.md` |
 | 测试范围 | API 测试、浏览器端到端测试、权限与安全专项、数据一致性、工程构建、数据库初始化 |
-| 总体结论 | **不通过，建议修复后再发布**：152 条用例中 150 条通过、2 条失败；仍存在 1 个 P0/S2 并发数据一致性缺陷 |
+| 总体结论 | **S2 并发缺陷已修复并复验通过**：152 条用例中 151 条通过、1 条失败；剩余 1 个 S4 视觉问题，不阻塞发布 |
 
 ---
 
@@ -17,21 +17,21 @@
 | --- | ---: |
 | 计划用例数 | 152 |
 | 已执行用例数 | 152 |
-| 通过 | 150 |
-| 失败 | 2 |
-| 通过率 | **98.7%** |
-| P0 通过率 | **50 / 51 = 98.0%** |
+| 通过 | 151 |
+| 失败 | 1 |
+| 通过率 | **99.3%** |
+| P0 通过率 | **51 / 51 = 100%** |
 | P1 通过率 | **91 / 92 = 98.9%** |
 | P2 通过率 | **9 / 9 = 100%** |
-| 未关闭缺陷 | 2（S2 × 1，S4 × 1） |
+| 未关闭缺陷 | 1（S4 × 1；S2 已修复） |
 | 前端类型检查 | 通过 |
 | 前端生产构建 | 通过 |
 
 退出标准评估：
 
-- [ ] 所有 P0 用例 100% 通过：**未满足**（`SEC-09` 失败）。
+- [x] 所有 P0 用例 100% 通过：**满足**（`SEC-09` 修复后复验通过）。
 - [x] P1 用例通过率不低于 95%：**满足**（98.9%）。
-- [ ] 无 S1、S2 级未关闭缺陷：**未满足**（存在 S2）。
+- [x] 无 S1、S2 级未关闭缺陷：**满足**（S2 已修复；仅剩 S4）。
 - [x] PRD 12 条验收主流程与权限矩阵已覆盖：满足。
 - [x] API 权限、手机号泄露、IDOR、重复成员关系专项已独立执行：除并发重复申请外通过。
 - [x] `npm run lint`、`npm run build` 通过；后端启动无未处理异常。
@@ -76,10 +76,10 @@
 | REV 队长审核 | 17 | 17 | 0 | — |
 | LC 生命周期与成员 | 17 | 17 | 0 | — |
 | MY 我的队伍 | 13 | 13 | 0 | — |
-| SEC 权限与安全 | 10 | 9 | 1 | `SEC-09` |
+| SEC 权限与安全 | 10 | 10 | 0 | — |
 | UI 界面与可用性 | 9 | 8 | 1 | `UI-04` |
 | NFR 非功能与工程 | 7 | 7 | 0 | — |
-| **合计** | **152** | **150** | **2** |  |
+| **合计** | **152** | **151** | **1** | `UI-04` |
 
 ### 3.1 主要通过项
 
@@ -95,16 +95,16 @@
 
 ---
 
-## 4. 缺陷明细
+## 4. 缺陷与修复复验
 
-### DEF-001（S2 / 阻塞发布）：并发重复申请可产生两条 pending 记录
+### DEF-001（S2）：并发重复申请可产生两条 pending 记录
 
 | 项目 | 内容 |
 | --- | --- |
 | 关联用例 | `SEC-09`（P0） |
 | 严重级别 | **S2 严重** |
 | 影响范围 | 同一用户对同一队伍并发提交申请；待审核数量、队长审核列表和数据一致性 |
-| 状态 | **未修复** |
+| 状态 | **已修复，复验通过** |
 
 **预期结果**：同一用户对同一队伍最多产生一条 `pending` 申请；并发请求中至多一个返回 `201`，其余返回 `409`。
 
@@ -126,20 +126,28 @@
 SUMMARY runs=30 duplicate_runs=5 duplicate_rate=17%
 ```
 
-**原因分析**：当前“先查最新 pending 再插入”的逻辑在两个并发数据库连接中不是原子操作；`applications` 表没有 `(applicant_id, team_id, pending)` 唯一约束兜底，两个事务都能在检查时看到“无 pending”。
+**原因分析**：原实现“先查最新 pending 再插入”的逻辑在两个并发数据库连接中不是原子操作；`applications` 表没有 `(applicant_id, team_id, pending)` 唯一约束兜底，两个事务都能在检查时看到“无 pending”。
 
-**修复建议**：
+**已实施修复**：
 
-1. 对 `applications` 增加部分唯一索引，例如：
-   `CREATE UNIQUE INDEX ux_pending_application ON applications(applicant_id, team_id) WHERE status = 'pending';`
-2. 申请接口使用 `BEGIN IMMEDIATE`，将“检查 + 插入”放入同一写事务，并捕获 `IntegrityError` 返回 `409`。
-3. 修复后至少重复执行 30 轮双线程并发申请回归，并补充审核并发回归。
+1. 在 `backend/app/database.py` 增加部分唯一索引：
+   `CREATE UNIQUE INDEX IF NOT EXISTS ux_applications_pending_applicant_team ON applications(applicant_id, team_id) WHERE status = 'pending';`
+2. 在 `backend/app/main.py` 的申请接口中使用 `BEGIN IMMEDIATE`，将队伍状态、成员身份、重复申请检查与插入放入同一写事务；捕获并发唯一约束冲突并统一返回 `409`。
+3. 增加旧数据库迁移逻辑：启动时先将历史重复 pending 中较早的记录自动拒绝，仅保留最新一条，再创建唯一索引，避免已有数据导致启动失败。
+
+**修复复验结果**：
+
+- 并发申请 30 轮：**30/30 均只有一个 `201`，另一请求返回 `409`，pending 数始终为 1，重复率 0%**。
+- 旧库迁移模拟：2 条历史 pending 自动收敛为 1 条，较早记录写入拒绝理由；唯一索引成功创建。
+- 唯一索引兜底：直接向数据库插入第二条 pending 会被 SQLite `IntegrityError` 阻断。
+- 完整 API 回归 122/122 通过，浏览器 E2E 关键申请/审核主流程通过。
+- 证据文件：`/tmp/hackmate-test-run/concurrency-apply-stress-fixed-final.txt`、`/tmp/hackmate-test-run/api-suite-fixed-final.txt`。
 
 **并发通过申请检查**：同一压力场景下重复 `approve` 10/10 轮均表现为一个 `200` + 一个 `409`，membership 未重复创建，该子项通过。
 
 ---
 
-### DEF-002（S4 / 一般）：队伍卡片 hover 上浮效果被入场动画覆盖
+### DEF-002（S4）：队伍卡片 hover 上浮效果被入场动画覆盖
 
 | 项目 | 内容 |
 | --- | --- |
@@ -162,20 +170,21 @@ SUMMARY runs=30 duplicate_runs=5 duplicate_rate=17%
 
 | 执行批次 | 数量 | 结果 |
 | --- | ---: | --- |
-| API 自动化检查 | 122 | 121 通过，1 失败（`SEC-09`） |
-| 浏览器 E2E 主套件 | 40 | 40 通过 |
-| 浏览器 E2E 补充套件 | 16 | 15 通过，1 失败（`UI-04`） |
+| API 自动化检查（修复后） | 122 | 122 通过 |
+| 浏览器 E2E 主套件（修复后） | 40 | 40 通过 |
+| 浏览器 E2E 补充套件（修复后） | 16 | 15 通过，1 失败（`UI-04`） |
 | NFR / 构建 / 数据库检查 | 7 | 7 通过 |
-| （按 152 条文档用例去重合并） | 152 | 150 通过，2 失败 |
+| （按 152 条文档用例去重合并） | 152 | 151 通过，1 失败 |
 
 关键证据文件：
 
-- 全量合并结果：`/tmp/hackmate-test-run/final-results.json`
+- 全量合并结果：`/tmp/hackmate-test-run/final-results-fixed.json`
 - API 结果：`/tmp/hackmate-test-run/api-results.json`
 - UI 主套件结果：`/tmp/hackmate-test-run/ui-results.json`
 - UI 补充套件结果：`/tmp/hackmate-test-run/ui-supplement-results.json`
 - NFR 结果：`/tmp/hackmate-test-run/nfr-results.json`
-- 并发压测：`/tmp/hackmate-test-run/concurrency-apply-stress.json`
+- 并发压测（修复后）：`/tmp/hackmate-test-run/concurrency-apply-stress.json`、`/tmp/hackmate-test-run/concurrency-apply-stress-fixed-final.txt`
+- 旧库迁移复验：`/tmp/hackmate-test-run/migration-fixed-final.txt`
 - 构建日志：`/tmp/hackmate-test-run/nfr05-lint.log`、`/tmp/hackmate-test-run/nfr05-build.log`
 - 页面截图：`/tmp/hackmate-test-run/screens/`
 
@@ -183,7 +192,7 @@ SUMMARY runs=30 duplicate_runs=5 duplicate_rate=17%
 
 ## 6. 风险与建议
 
-1. **发布前必须修复 DEF-001 并回归 `SEC-09`**。当前退出标准中“所有 P0 通过”和“无 S2 未关闭缺陷”均未满足。
-2. 修复并发重复申请时，建议同时对“待审核数量、审核列表、申请通过/拒绝”做一次数据一致性回归，避免历史重复数据影响审核逻辑。
+1. **DEF-001 已修复并通过并发、迁移和全量 API 回归**；P0 用例现全部通过，S2 已关闭。
+2. 建议保留本次并发压力与旧库迁移测试作为发布前回归项，尤其关注未来修改申请流程或 SQLite 事务边界时。
 3. DEF-002 不影响业务流程，可随视觉优化迭代修复；建议在完成修复后复查卡片 hover 与入场动画。
 4. 当前项目没有提交正式的自动化测试目录；本次使用独立测试脚本执行。建议将 API 用例与关键 Playwright E2E 用例纳入仓库，作为后续回归基线。

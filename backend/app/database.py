@@ -98,6 +98,12 @@ CREATE INDEX IF NOT EXISTS idx_applications_team ON applications(team_id, status
 CREATE INDEX IF NOT EXISTS idx_applications_user ON applications(applicant_id, team_id);
 """
 
+PENDING_APPLICATION_INDEX = """
+CREATE UNIQUE INDEX IF NOT EXISTS ux_applications_pending_applicant_team
+ON applications(applicant_id, team_id)
+WHERE status = 'pending';
+"""
+
 
 
 def seed_database(conn: sqlite3.Connection) -> None:
@@ -254,9 +260,39 @@ def seed_database(conn: sqlite3.Connection) -> None:
     conn.commit()
 
 
+def close_duplicate_pending_applications(conn: sqlite3.Connection) -> None:
+    """Keep the newest pending application for each applicant/team pair.
+
+    Older installations may already contain duplicates created by concurrent
+    requests. Resolve those rows before adding the partial unique index so the
+    migration is safe to run on an existing database.
+    """
+    duplicate_groups = conn.execute(
+        """SELECT applicant_id, team_id, MAX(id) AS keep_id
+        FROM applications
+        WHERE status = 'pending'
+        GROUP BY applicant_id, team_id
+        HAVING COUNT(*) > 1"""
+    ).fetchall()
+    if not duplicate_groups:
+        return
+
+    stamp = now_iso()
+    reason = "系统检测到重复待审核申请，已自动关闭较早记录。"
+    for group in duplicate_groups:
+        conn.execute(
+            """UPDATE applications
+            SET status = 'rejected', rejection_reason = ?, updated_at = ?
+            WHERE applicant_id = ? AND team_id = ? AND status = 'pending' AND id != ?""",
+            (reason, stamp, group["applicant_id"], group["team_id"], group["keep_id"]),
+        )
+
+
 def init_database() -> None:
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     with connect() as conn:
         conn.executescript(SCHEMA)
+        close_duplicate_pending_applications(conn)
+        conn.execute(PENDING_APPLICATION_INDEX)
         if SEED_ENABLED:
             seed_database(conn)
