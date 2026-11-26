@@ -1,0 +1,1147 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="HackMate 从想法到可验收 MVP 的项目开发流程可视化。">
+  <title>HackMate · 从想法到可验收 MVP</title>
+  <style>
+    :root {
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --text: #0a0a0a;
+      --text-2: #5f6368;
+      --text-3: #8b8f98;
+      --border: #e8e8ec;
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --violet: #8b5cf6;
+      --green: #10b981;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --teal: #14b8a6;
+      --radius: 14px;
+      --shadow: 0 16px 48px rgba(17, 24, 39, .06);
+      --font: "Avenir Next", "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      --mono: "SFMono-Regular", "JetBrains Mono", Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: inherit; }
+    button { font: inherit; }
+
+    .wrap {
+      width: min(1380px, calc(100% - 56px));
+      margin: 0 auto;
+    }
+
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(250, 250, 250, .86);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .nav-inner {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: var(--text);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-left: auto;
+    }
+    .nav-links a {
+      color: var(--text-2);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: color .2s ease;
+    }
+    .nav-links a:hover { color: var(--primary); }
+    .print-button {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 13px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color .2s ease, color .2s ease, transform .2s ease;
+      white-space: nowrap;
+    }
+    .print-button:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .hero {
+      padding: 78px 0 42px;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.28fr) minmax(340px, .72fr);
+      gap: 64px;
+      align-items: center;
+    }
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      color: var(--primary-dark);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 28px;
+      height: 2px;
+      border-radius: 99px;
+      background: var(--primary);
+    }
+    h1 {
+      margin: 0;
+      max-width: 860px;
+      font-size: clamp(38px, 4.6vw, 66px);
+      line-height: 1.04;
+      letter-spacing: -.045em;
+      font-weight: 800;
+    }
+    h1 .accent { color: var(--primary); }
+    .hero-copy {
+      max-width: 720px;
+      margin: 24px 0 0;
+      color: var(--text-2);
+      font-size: 17px;
+      line-height: 1.8;
+    }
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 28px;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 11px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--text-2);
+      font-size: 12px;
+      font-weight: 650;
+    }
+    .tag-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    .rail-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--surface);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+    .rail-heading {
+      margin: 0 0 18px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+    .rail-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0;
+    }
+    .rail-item {
+      display: grid;
+      grid-template-columns: 20px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+      padding: 11px 0;
+      border-bottom: 1px solid #f0f0f3;
+    }
+    .rail-item:last-child { border-bottom: 0; padding-bottom: 0; }
+    .rail-item:first-child { padding-top: 0; }
+    .rail-dot {
+      width: 9px;
+      height: 9px;
+      margin-top: 7px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 0 4px #eef2ff;
+    }
+    .rail-item:nth-child(2) .rail-dot { background: var(--violet); box-shadow: 0 0 0 4px #f5f3ff; }
+    .rail-item:nth-child(3) .rail-dot { background: var(--green); box-shadow: 0 0 0 4px #ecfdf5; }
+    .rail-item:nth-child(4) .rail-dot { background: var(--orange); box-shadow: 0 0 0 4px #fff7ed; }
+    .rail-item:nth-child(5) .rail-dot { background: var(--teal); box-shadow: 0 0 0 4px #f0fdfa; }
+    .rail-title {
+      font-size: 14px;
+      font-weight: 750;
+      line-height: 1.35;
+    }
+    .rail-sub {
+      margin-top: 2px;
+      color: var(--text-3);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .rail-time {
+      padding-top: 1px;
+      color: var(--text-3);
+      font-family: var(--mono);
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      padding: 12px 0 0;
+    }
+    .stat-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 20px 22px;
+    }
+    .stat-value {
+      font-size: 32px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -.04em;
+    }
+    .stat-value small {
+      color: var(--text-3);
+      font-size: 13px;
+      font-weight: 650;
+      letter-spacing: 0;
+    }
+    .stat-label {
+      margin-top: 8px;
+      color: var(--text-2);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .section {
+      padding: 58px 0;
+      border-top: 1px solid var(--border);
+      margin-top: 46px;
+    }
+    .section:first-of-type { margin-top: 26px; }
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 40px;
+      margin-bottom: 24px;
+    }
+    .section-kicker {
+      margin-bottom: 8px;
+      color: var(--primary-dark);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    h2 {
+      margin: 0;
+      font-size: clamp(27px, 3vw, 38px);
+      line-height: 1.16;
+      letter-spacing: -.035em;
+    }
+    .section-copy {
+      max-width: 580px;
+      margin: 10px 0 0;
+      color: var(--text-2);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      align-items: center;
+      margin: 0 0 18px;
+      color: var(--text-2);
+      font-size: 12px;
+      font-weight: 650;
+    }
+    .legend-item { display: inline-flex; align-items: center; gap: 7px; }
+    .legend-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      border: 1px solid rgba(0, 0, 0, .08);
+    }
+    .legend-line {
+      width: 24px;
+      height: 0;
+      border-top: 2px dashed var(--red);
+      margin-right: 1px;
+    }
+
+    .chart-shell {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--surface);
+      padding: 14px;
+      box-shadow: 0 18px 60px rgba(17, 24, 39, .045);
+    }
+    .chart-shell svg {
+      display: block;
+      width: 100%;
+      min-width: 1120px;
+      height: auto;
+    }
+    .chart-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin: 12px 2px 0;
+      color: var(--text-3);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+    .chart-note strong { color: var(--text-2); }
+    .warning-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 12px;
+      padding: 7px 10px;
+      border: 1px solid #fed7aa;
+      border-radius: 8px;
+      background: #fff7ed;
+      color: #9a3412;
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .warning-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--orange);
+      flex: 0 0 auto;
+    }
+
+    .timeline-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .commit-card {
+      position: relative;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      padding: 17px 18px 16px;
+      overflow: hidden;
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .commit-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 3px;
+      background: var(--primary);
+    }
+    .commit-card.design::before { background: var(--violet); }
+    .commit-card.dev::before { background: var(--green); }
+    .commit-card.test::before { background: var(--orange); }
+    .commit-card.fix::before { background: var(--red); }
+    .commit-card:hover {
+      transform: translateY(-2px);
+      border-color: #d9dae3;
+      box-shadow: 0 10px 28px rgba(17, 24, 39, .06);
+    }
+    .commit-top {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .commit-time {
+      color: var(--text-3);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 650;
+    }
+    .phase-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #4338ca;
+      font-size: 9px;
+      font-weight: 750;
+      letter-spacing: .03em;
+    }
+    .commit-card.design .phase-chip { background: #f5f3ff; color: #6d28d9; }
+    .commit-card.dev .phase-chip { background: #ecfdf5; color: #047857; }
+    .commit-card.test .phase-chip { background: #fff7ed; color: #b45309; }
+    .commit-card.fix .phase-chip { background: #fef2f2; color: #b91c1c; }
+    .commit-hash {
+      margin-left: auto;
+      padding: 2px 6px;
+      border: 1px solid #ececf1;
+      border-radius: 5px;
+      background: #fbfbfc;
+      color: var(--text-3);
+      font-family: var(--mono);
+      font-size: 9px;
+    }
+    .commit-card h3 {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.45;
+      letter-spacing: -.012em;
+    }
+    .commit-card p {
+      margin: 5px 0 0;
+      color: var(--text-2);
+      font-size: 11.5px;
+      line-height: 1.65;
+    }
+
+    .decision-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .decision-card {
+      min-height: 176px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 22px;
+    }
+    .decision-index {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 27px;
+      height: 27px;
+      border-radius: 8px;
+      background: #eef2ff;
+      color: var(--primary-dark);
+      font-size: 11px;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+    .decision-card:nth-child(2) .decision-index { background: #f5f3ff; color: #6d28d9; }
+    .decision-card:nth-child(3) .decision-index { background: #ecfdf5; color: #047857; }
+    .decision-card:nth-child(4) .decision-index { background: #fff7ed; color: #b45309; }
+    .decision-card:nth-child(5) .decision-index { background: #fef2f2; color: #b91c1c; }
+    .decision-card:nth-child(6) .decision-index { background: #f0fdfa; color: #0f766e; }
+    .decision-card h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      letter-spacing: -.02em;
+    }
+    .decision-card p {
+      margin: 0;
+      color: var(--text-2);
+      font-size: 12.5px;
+      line-height: 1.7;
+    }
+    .decision-card code {
+      font-family: var(--mono);
+      font-size: .92em;
+      color: var(--text);
+    }
+
+    .takeaway-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .takeaway-card {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 24px;
+    }
+    .takeaway-number {
+      color: var(--primary);
+      font-size: 40px;
+      line-height: .95;
+      font-weight: 800;
+      letter-spacing: -.06em;
+    }
+    .takeaway-card:nth-child(2) .takeaway-number { color: var(--violet); }
+    .takeaway-card:nth-child(3) .takeaway-number { color: var(--green); }
+    .takeaway-card:nth-child(4) .takeaway-number { color: var(--orange); }
+    .takeaway-card h3 {
+      margin: 2px 0 8px;
+      font-size: 16px;
+      letter-spacing: -.02em;
+    }
+    .takeaway-card p {
+      margin: 0;
+      color: var(--text-2);
+      font-size: 12.5px;
+      line-height: 1.7;
+    }
+
+    .footer {
+      margin-top: 54px;
+      padding: 30px 0 44px;
+      border-top: 1px solid var(--border);
+      color: var(--text-3);
+      font-size: 11px;
+      line-height: 1.8;
+    }
+    .footer strong { color: var(--text-2); }
+    .footer-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 1050px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 34px; }
+      .rail-card { max-width: 680px; }
+      .nav-links { display: none; }
+      .decision-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 760px) {
+      .wrap { width: min(100% - 32px, 1380px); }
+      .hero { padding-top: 48px; }
+      .hero-copy { font-size: 15px; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .timeline-grid, .decision-grid, .takeaway-grid { grid-template-columns: 1fr; }
+      .section { padding: 44px 0; margin-top: 28px; }
+      .section-head { display: block; }
+      .section-copy { margin-top: 12px; }
+      .print-button { display: none; }
+      .footer-row { display: block; }
+      .footer-row > * + * { margin-top: 12px; }
+      .chart-shell { border-radius: 14px; padding: 8px; }
+      .takeaway-card { grid-template-columns: 44px minmax(0, 1fr); gap: 14px; padding: 20px; }
+      .takeaway-number { font-size: 32px; }
+    }
+
+    @media print {
+      @page { size: A4 landscape; margin: 10mm; }
+      body { background: #fff; }
+      .site-nav, .print-button, .hero-tags, .chart-note .print-hide { display: none !important; }
+      .wrap { width: 100%; }
+      .hero { padding: 0 0 20px; }
+      .hero h1 { font-size: 34px; }
+      .rail-card, .chart-shell, .commit-card, .decision-card, .takeaway-card { box-shadow: none; }
+      .section { break-inside: avoid; page-break-inside: avoid; padding: 24px 0; margin-top: 12px; }
+      .chart-shell { overflow: visible; padding: 0; border: 0; }
+      .chart-shell svg { min-width: 0; }
+      .legend { break-after: avoid; }
+      .timeline-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .decision-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .takeaway-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .commit-card:hover { transform: none; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#top" aria-label="回到页面顶部">
+        <span class="brand-mark">H</span>
+        <span>HackMate · 开发流程</span>
+      </a>
+      <nav class="nav-links" aria-label="页面导航">
+        <a href="#flow">流程图</a>
+        <a href="#timeline">Git 时间线</a>
+        <a href="#decisions">关键决策</a>
+        <a href="#takeaways">教学要点</a>
+      </nav>
+      <button class="print-button" type="button" onclick="window.print()">打印 / 导出 PDF</button>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="wrap">
+        <div class="hero-grid">
+          <div>
+            <div class="eyebrow">Project retrospective · 2026-11-26</div>
+            <h1>从想法到可验收 MVP<br><span class="accent">HackMate 的 AI 协同开发流程</span></h1>
+            <p class="hero-copy">
+              这不是一张“功能清单”，而是一条可复盘的工作链：
+              <strong>需求澄清 → AI 评审 → 人工决策 → 规格冻结 → 全栈实现 → 测试闭环 → 修复交付</strong>。
+              图中的每个节点，都能在 Git 提交和项目文档中找到对应证据。
+            </p>
+            <div class="hero-tags" aria-label="项目关键词">
+              <span class="tag"><span class="tag-dot"></span>14 次 Git 提交</span>
+              <span class="tag"><span class="tag-dot" style="background:var(--violet)"></span>13 个关键步骤</span>
+              <span class="tag"><span class="tag-dot" style="background:var(--orange)"></span>152 条测试用例</span>
+              <span class="tag"><span class="tag-dot" style="background:var(--teal)"></span>可继续迭代的 MVP</span>
+            </div>
+          </div>
+
+          <aside class="rail-card" aria-label="五个开发阶段">
+            <h2 class="rail-heading">Five phases · 五个阶段</h2>
+            <ol class="rail-list">
+              <li class="rail-item">
+                <span class="rail-dot" aria-hidden="true"></span>
+                <span>
+                  <span class="rail-title">需求定义</span>
+                  <span class="rail-sub">Idea、AI 评审、人工回答</span>
+                </span>
+                <span class="rail-time">08:53–10:00</span>
+              </li>
+              <li class="rail-item">
+                <span class="rail-dot" aria-hidden="true"></span>
+                <span>
+                  <span class="rail-title">规格冻结</span>
+                  <span class="rail-sub">设计基线、PRD、视觉规范</span>
+                </span>
+                <span class="rail-time">10:00–10:12</span>
+              </li>
+              <li class="rail-item">
+                <span class="rail-dot" aria-hidden="true"></span>
+                <span>
+                  <span class="rail-title">AI 全栈实现</span>
+                  <span class="rail-sub">前后端 MVP、页面走查微调</span>
+                </span>
+                <span class="rail-time">10:36–11:08</span>
+              </li>
+              <li class="rail-item">
+                <span class="rail-dot" aria-hidden="true"></span>
+                <span>
+                  <span class="rail-title">验证闭环</span>
+                  <span class="rail-sub">测试设计、执行、修复、回归</span>
+                </span>
+                <span class="rail-time">12:52–13:37</span>
+              </li>
+              <li class="rail-item">
+                <span class="rail-dot" aria-hidden="true"></span>
+                <span>
+                  <span class="rail-title">交付与迭代</span>
+                  <span class="rail-sub">README、测试报告、后续优化</span>
+                </span>
+                <span class="rail-time">13:37+</span>
+              </li>
+            </ol>
+          </aside>
+        </div>
+
+        <div class="stats" aria-label="项目关键数据">
+          <div class="stat-card">
+            <div class="stat-value">14<small> commits</small></div>
+            <div class="stat-label">Git 提交记录</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">13<small> steps</small></div>
+            <div class="stat-label">流程图关键节点</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">152<small> cases</small></div>
+            <div class="stat-label">测试用例总数</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">99.3<small> %</small></div>
+            <div class="stat-label">测试通过率 · 151 / 152</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="flow">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">01 · Process map</div>
+            <h2>一张图看懂开发主线</h2>
+            <p class="section-copy">
+              实线表示主流程，虚线表示验证未达标后的修复回路。
+              编号与下方的 Git 时间线一一对应，方便在教学中从“做了什么”追溯到“为什么这样做”。
+            </p>
+          </div>
+        </div>
+
+        <div class="legend" aria-label="流程图图例">
+          <span class="legend-item"><span class="legend-swatch" style="background:#eef2ff;border-color:#c7d2fe"></span>需求定义</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:#f5f3ff;border-color:#ddd6fe"></span>规格与设计</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:#ecfdf5;border-color:#a7f3d0"></span>AI 实现</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:#fff7ed;border-color:#fed7aa"></span>测试与缺陷闭环</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:#f0fdfa;border-color:#99f6e4"></span>交付</span>
+          <span class="legend-item"><span class="legend-line"></span>修复回路</span>
+        </div>
+
+        <div class="chart-shell">
+          <svg viewBox="0 0 1460 1360" role="img" aria-labelledby="flow-title flow-desc" xmlns="http://www.w3.org/2000/svg">
+            <title id="flow-title">HackMate 开发过程流程图</title>
+            <desc id="flow-desc">从项目启动、需求定义、AI 评审、人工决策、设计基线、规格化、全栈实现、页面修改、测试设计、测试执行、缺陷修复、回归验证到最终交付的流程图。</desc>
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#8b93a7"></path>
+              </marker>
+              <marker id="arrow-loop" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444"></path>
+              </marker>
+              <filter id="soft-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="4" stdDeviation="7" flood-color="#111827" flood-opacity="0.035"></feDropShadow>
+              </filter>
+              <style>
+                .node-title { font-family: var(--font, sans-serif); font-size: 15px; font-weight: 750; fill: #1f2937; }
+                .node-sub { font-family: var(--font, sans-serif); font-size: 11px; font-weight: 500; fill: #64748b; }
+                .node-num { font-family: var(--mono, monospace); font-size: 11px; font-weight: 800; fill: #4338ca; }
+                .side-title { font-family: var(--font, sans-serif); font-size: 14px; font-weight: 750; fill: #1f2937; }
+                .side-sub { font-family: var(--font, sans-serif); font-size: 10.5px; font-weight: 500; fill: #64748b; }
+                .decision-title { font-family: var(--font, sans-serif); font-size: 15px; font-weight: 750; fill: #7c2d12; }
+                .decision-sub { font-family: var(--font, sans-serif); font-size: 10.5px; font-weight: 550; fill: #9a3412; }
+                .flow-line { fill: none; stroke: #8b93a7; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+                .flow-line-dashed { fill: none; stroke: #ef4444; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 7 6; }
+                .edge-label { font-family: var(--font, sans-serif); font-size: 11px; font-weight: 700; fill: #475569; }
+                .edge-label-loop { font-family: var(--font, sans-serif); font-size: 11px; font-weight: 700; fill: #b91c1c; }
+                .label-bg { fill: #ffffff; stroke: #f1f5f9; stroke-width: 1; }
+                .start-title { font-family: var(--font, sans-serif); font-size: 15px; font-weight: 800; fill: #ffffff; }
+                .start-sub { font-family: var(--font, sans-serif); font-size: 10.5px; font-weight: 500; fill: #cbd5e1; }
+              </style>
+            </defs>
+
+            <!-- ===== main flow arrows ===== -->
+            <path class="flow-line" d="M 450 68 V 88" marker-end="url(#arrow)"></path>
+            <path class="flow-line" d="M 450 152 V 170" marker-end="url(#arrow)"></path>
+            <path class="flow-line" d="M 450 234 V 252" marker-end="url(#arrow)"></path>
+            <path class="flow-line" d="M 450 316 V 334" marker-end="url(#arrow)"></path>
+            <path class="flow-line" d="M 450 398 V 416" marker-end="url(#arrow)"></path>
+            <path class="flow-line" d="M 450 480 V 498" marker-end="url(#arrow)"></path>
+            <path class="flow-line" d="M 450 562 V 580" marker-end="url(#arrow)"></path>
+            <path class="flow-line" d="M 450 644 V 662" marker-end="url(#arrow)"></path>
+            <path class="flow-line" d="M 450 726 V 744" marker-end="url(#arrow)"></path>
+            <path class="flow-line" d="M 450 808 V 826" marker-end="url(#arrow)"></path>
+            <path class="flow-line" d="M 450 890 V 905" marker-end="url(#arrow)"></path>
+
+            <!-- K yes: K right -> L left -->
+            <path class="flow-line" d="M 690 950 H 880" marker-end="url(#arrow)"></path>
+            <!-- K no: K bottom -> turn right -> M left -->
+            <path class="flow-line" d="M 450 995 V 1034 H 880" marker-end="url(#arrow)"></path>
+            <!-- L -> M -->
+            <path class="flow-line" d="M 1070 982 V 1000" marker-end="url(#arrow)"></path>
+            <!-- M -> N -->
+            <path class="flow-line" d="M 1070 1064 V 1085" marker-end="url(#arrow)"></path>
+            <!-- N yes: down, then left into O -->
+            <path class="flow-line" d="M 1070 1165 V 1232 H 730" marker-end="url(#arrow)"></path>
+            <!-- O -> Done -->
+            <path class="flow-line" d="M 450 1264 V 1290" marker-end="url(#arrow)"></path>
+            <!-- N no: right, up, left into L -->
+            <path class="flow-line-dashed" d="M 1220 1125 H 1360 V 950 H 1260" marker-end="url(#arrow-loop)"></path>
+
+            <!-- ===== edge labels ===== -->
+            <rect class="label-bg" x="742" y="938" width="30" height="22" rx="11"></rect>
+            <text class="edge-label" x="757" y="953" text-anchor="middle">是</text>
+
+            <rect class="label-bg" x="500" y="1019" width="125" height="22" rx="11"></rect>
+            <text class="edge-label" x="562" y="1034" text-anchor="middle">否（仅剩 S4）</text>
+
+            <rect class="label-bg" x="994" y="1208" width="30" height="22" rx="11"></rect>
+            <text class="edge-label" x="1009" y="1223" text-anchor="middle">是</text>
+
+            <text class="edge-label-loop" x="1286" y="1063" text-anchor="middle">否 · 回修</text>
+
+            <!-- ===== start ===== -->
+            <g filter="url(#soft-shadow)">
+              <rect x="350" y="22" width="200" height="46" rx="23" fill="#111827"></rect>
+            </g>
+            <text class="start-title" x="450" y="43" text-anchor="middle">项目启动</text>
+            <text class="start-sub" x="450" y="58" text-anchor="middle">2026-11-26 · 08:53</text>
+
+            <!-- ===== main cards ===== -->
+            <g filter="url(#soft-shadow)">
+              <rect x="170" y="88" width="560" height="64" rx="14" fill="#eef2ff" stroke="#c7d2fe"></rect>
+              <rect x="170" y="170" width="560" height="64" rx="14" fill="#eef2ff" stroke="#c7d2fe"></rect>
+              <rect x="170" y="252" width="560" height="64" rx="14" fill="#eef2ff" stroke="#c7d2fe"></rect>
+              <rect x="170" y="334" width="560" height="64" rx="14" fill="#eef2ff" stroke="#c7d2fe"></rect>
+              <rect x="170" y="416" width="560" height="64" rx="14" fill="#eef2ff" stroke="#c7d2fe"></rect>
+              <rect x="170" y="498" width="560" height="64" rx="14" fill="#f5f3ff" stroke="#ddd6fe"></rect>
+              <rect x="170" y="580" width="560" height="64" rx="14" fill="#ecfdf5" stroke="#a7f3d0"></rect>
+              <rect x="170" y="662" width="560" height="64" rx="14" fill="#ecfdf5" stroke="#a7f3d0"></rect>
+              <rect x="170" y="744" width="560" height="64" rx="14" fill="#fff7ed" stroke="#fed7aa"></rect>
+              <rect x="170" y="826" width="560" height="64" rx="14" fill="#fff7ed" stroke="#fed7aa"></rect>
+              <rect x="170" y="1200" width="560" height="64" rx="14" fill="#f0fdfa" stroke="#99f6e4"></rect>
+            </g>
+
+            <!-- numbered circles -->
+            <g>
+              <circle cx="202" cy="120" r="15" fill="#ffffff" fill-opacity=".8" stroke="#c7d2fe"></circle>
+              <circle cx="202" cy="202" r="15" fill="#ffffff" fill-opacity=".8" stroke="#c7d2fe"></circle>
+              <circle cx="202" cy="284" r="15" fill="#ffffff" fill-opacity=".8" stroke="#c7d2fe"></circle>
+              <circle cx="202" cy="366" r="15" fill="#ffffff" fill-opacity=".8" stroke="#c7d2fe"></circle>
+              <circle cx="202" cy="448" r="15" fill="#ffffff" fill-opacity=".8" stroke="#c7d2fe"></circle>
+              <circle cx="202" cy="530" r="15" fill="#ffffff" fill-opacity=".8" stroke="#ddd6fe"></circle>
+              <circle cx="202" cy="612" r="15" fill="#ffffff" fill-opacity=".8" stroke="#a7f3d0"></circle>
+              <circle cx="202" cy="694" r="15" fill="#ffffff" fill-opacity=".8" stroke="#a7f3d0"></circle>
+              <circle cx="202" cy="776" r="15" fill="#ffffff" fill-opacity=".8" stroke="#fed7aa"></circle>
+              <circle cx="202" cy="858" r="15" fill="#ffffff" fill-opacity=".8" stroke="#fed7aa"></circle>
+              <circle cx="202" cy="1232" r="15" fill="#ffffff" fill-opacity=".8" stroke="#99f6e4"></circle>
+
+              <text class="node-num" x="202" y="124" text-anchor="middle">1</text>
+              <text class="node-num" x="202" y="206" text-anchor="middle">2</text>
+              <text class="node-num" x="202" y="288" text-anchor="middle">3</text>
+              <text class="node-num" x="202" y="370" text-anchor="middle">4</text>
+              <text class="node-num" x="202" y="452" text-anchor="middle">5</text>
+              <text class="node-num" x="202" y="534" text-anchor="middle">6</text>
+              <text class="node-num" x="202" y="616" text-anchor="middle">7</text>
+              <text class="node-num" x="202" y="698" text-anchor="middle">8</text>
+              <text class="node-num" x="202" y="780" text-anchor="middle">9</text>
+              <text class="node-num" x="202" y="862" text-anchor="middle">10</text>
+              <text class="node-num" x="202" y="1236" text-anchor="middle">13</text>
+            </g>
+
+            <!-- main card text -->
+            <g>
+              <text class="node-title" x="230" y="114">初始化项目</text>
+              <text class="node-sub" x="230" y="133">建立仓库 · README · AGENTS.md</text>
+
+              <text class="node-title" x="230" y="196">形成初始需求</text>
+              <text class="node-sub" x="230" y="215">docs/idea.md：用户故事与功能清单</text>
+
+              <text class="node-title" x="230" y="278">AI 需求评审（DSH）</text>
+              <text class="node-sub" x="230" y="297">从使用者视角找出 8 个 P0 + 3 个 P1 设计缺口</text>
+
+              <text class="node-title" x="230" y="360">人工澄清与产品决策</text>
+              <text class="node-sub" x="230" y="379">填写【我的回答】，确认权限、状态、范围与不做项</text>
+
+              <text class="node-title" x="230" y="442">收敛设计基线</text>
+              <text class="node-sub" x="230" y="461">docs/draft-edited.md，同步更新 AGENTS.md</text>
+
+              <text class="node-title" x="230" y="524">规格化</text>
+              <text class="node-sub" x="230" y="543">docs/prd.md + DESIGN.md：需求与视觉规范</text>
+
+              <text class="node-title" x="230" y="606">AI 全栈实现</text>
+              <text class="node-sub" x="230" y="625">FastAPI + SQLite + uv；React + Vite + TypeScript</text>
+
+              <text class="node-title" x="230" y="688">页面走查与聚焦修改</text>
+              <text class="node-sub" x="230" y="707">导航、登录入口等交互细节优化</text>
+
+              <text class="node-title" x="230" y="770">测试设计</text>
+              <text class="node-sub" x="230" y="789">docs/test-cases.md：152 条用例、权限与退出标准</text>
+
+              <text class="node-title" x="230" y="852">测试执行</text>
+              <text class="node-sub" x="230" y="871">API · Playwright E2E · 并发 · 安全 · UI/NFR</text>
+
+              <text class="node-title" x="230" y="1226">文档与交付收口</text>
+              <text class="node-sub" x="230" y="1245">README · 测试报告 · 最终提交 · 后续迭代入口</text>
+            </g>
+
+            <!-- ===== decision K ===== -->
+            <g filter="url(#soft-shadow)">
+              <polygon points="450,905 690,950 450,995 210,950" fill="#fff7ed" stroke="#f59e0b" stroke-width="1.5"></polygon>
+            </g>
+            <text class="decision-title" x="450" y="945" text-anchor="middle">发现需要修复的缺陷？</text>
+            <text class="decision-sub" x="450" y="963" text-anchor="middle">S2：并发重复申请</text>
+
+            <!-- ===== side cards L / M ===== -->
+            <g filter="url(#soft-shadow)">
+              <rect x="880" y="918" width="380" height="64" rx="14" fill="#fef2f2" stroke="#fecaca"></rect>
+              <rect x="880" y="1000" width="380" height="64" rx="14" fill="#fef2f2" stroke="#fecaca"></rect>
+            </g>
+            <text class="side-title" x="906" y="944">⑪ 缺陷分析与修复</text>
+            <text class="side-sub" x="906" y="962">唯一索引 · BEGIN IMMEDIATE · 旧库迁移</text>
+            <text class="side-title" x="906" y="1026">⑫ 修复复验与回归</text>
+            <text class="side-sub" x="906" y="1044">并发 30/30 通过 · 更新测试报告</text>
+
+            <!-- ===== decision N ===== -->
+            <g filter="url(#soft-shadow)">
+              <polygon points="1070,1085 1220,1125 1070,1165 920,1125" fill="#fff7ed" stroke="#f59e0b" stroke-width="1.5"></polygon>
+            </g>
+            <text class="decision-title" x="1070" y="1121" text-anchor="middle">达到退出标准？</text>
+            <text class="decision-sub" x="1070" y="1139" text-anchor="middle">P0 100% · 无 S1/S2</text>
+
+            <!-- ===== done ===== -->
+            <g filter="url(#soft-shadow)">
+              <rect x="330" y="1290" width="240" height="46" rx="23" fill="#111827"></rect>
+            </g>
+            <text class="start-title" x="450" y="1311" text-anchor="middle">MVP 交付，可继续迭代</text>
+            <text class="start-sub" x="450" y="1325" text-anchor="middle">151 / 152 通过 · 仅 1 个 S4</text>
+          </svg>
+        </div>
+        <div class="chart-note">
+          <strong>读图提示：</strong>
+          <span>主流程按编号 1 → 13 阅读；测试发现缺陷后进入 11 → 12 的修复回路，未达到退出标准时回到修复节点，达标后进入 13 交付收口。</span>
+        </div>
+        <div class="warning-note"><span class="warning-dot" aria-hidden="true"></span>最终留下 1 个 S4 卡片 hover 视觉问题；P0 全部通过，达到项目退出标准。</div>
+      </div>
+    </section>
+
+    <section class="section" id="timeline">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">02 · Git evidence</div>
+            <h2>14 次提交，14 个过程证据</h2>
+            <p class="section-copy">
+              将 Git 时间线和项目文档交叉阅读，可以看到“讨论 → 文档 → 实现 → 验证 → 修复”的完整链条，
+              而不只是最终代码。
+            </p>
+          </div>
+        </div>
+
+        <div class="timeline-grid">
+          <article class="commit-card">
+            <div class="commit-top"><time class="commit-time">08:53</time><span class="phase-chip">立项</span><code class="commit-hash">6f33628</code></div>
+            <h3>初始化项目</h3>
+            <p>建立最小仓库骨架，保留 README 和空的 AGENTS.md，为后续文档驱动开发预留位置。</p>
+          </article>
+
+          <article class="commit-card">
+            <div class="commit-top"><time class="commit-time">09:09</time><span class="phase-chip">需求</span><code class="commit-hash">5929ec8</code></div>
+            <h3>添加 idea 草稿文件</h3>
+            <p>把组队产品创意、核心场景和开发期验证码要求写成可执行的初始需求。</p>
+          </article>
+
+          <article class="commit-card">
+            <div class="commit-top"><time class="commit-time">09:18</time><span class="phase-chip">约束</span><code class="commit-hash">12699ea</code></div>
+            <h3>编写 AGENTS.md</h3>
+            <p>明确技术栈、前后端目录和本阶段范围，并排除 PDF、图片、视频上传功能。</p>
+          </article>
+
+          <article class="commit-card">
+            <div class="commit-top"><time class="commit-time">09:26</time><span class="phase-chip">AI 评审</span><code class="commit-hash">18d0852</code></div>
+            <h3>DSH 从使用者视角评审 Idea</h3>
+            <p>发现用户画像、名额规则、审核流程、联系方式、生命周期等 11 组设计缺口，形成 P0/P1 问题清单。</p>
+          </article>
+
+          <article class="commit-card">
+            <div class="commit-top"><time class="commit-time">09:47</time><span class="phase-chip">人工决策</span><code class="commit-hash">394f915</code></div>
+            <h3>人工编辑 draft 文档</h3>
+            <p>逐项填写【我的回答】，冻结昵称、权限、名额、审核、联系方式等关键业务规则。</p>
+          </article>
+
+          <article class="commit-card design">
+            <div class="commit-top"><time class="commit-time">10:00</time><span class="phase-chip">设计基线</span><code class="commit-hash">dfd26f8</code></div>
+            <h3>多轮讨论生成 draft-edited</h3>
+            <p>删除待确认项和冲突建议，把人工回答整理成可执行的整合版关键设计。</p>
+          </article>
+
+          <article class="commit-card design">
+            <div class="commit-top"><time class="commit-time">10:01</time><span class="phase-chip">上下文</span><code class="commit-hash">b9aad74</code></div>
+            <h3>更新 AGENTS.md 文档索引</h3>
+            <p>将 draft-edited 指定为唯一设计基线，明确旧 draft 不再作为实现依据。</p>
+          </article>
+
+          <article class="commit-card design">
+            <div class="commit-top"><time class="commit-time">10:06</time><span class="phase-chip">PRD</span><code class="commit-hash">b439f86</code></div>
+            <h3>使用 DSH 生成 PRD</h3>
+            <p>把设计基线转成产品需求文档，明确功能范围、页面清单、权限矩阵和 12 条验收标准。</p>
+          </article>
+
+          <article class="commit-card design">
+            <div class="commit-top"><time class="commit-time">10:12</time><span class="phase-chip">视觉规范</span><code class="commit-hash">049dd6e</code></div>
+            <h3>添加 DESIGN.md</h3>
+            <p>补充颜色、字体、组件、间距与交互规范，把产品视觉语言也纳入 AI 上下文。</p>
+          </article>
+
+          <article class="commit-card dev">
+            <div class="commit-top"><time class="commit-time">10:36</time><span class="phase-chip">实现</span><code class="commit-hash">1c8f43c</code></div>
+            <h3>DSH 实现前后端程序</h3>
+            <p>一次提交 49 个文件，完成登录、广场、创建队伍、申请、审核、我的队伍等完整 MVP 闭环。</p>
+          </article>
+
+          <article class="commit-card dev">
+            <div class="commit-top"><time class="commit-time">11:08</time><span class="phase-chip">微调</span><code class="commit-hash">e2c95a6</code></div>
+            <h3>使用 DSH 进行页面修改</h3>
+            <p>页面走查后精简导航中的重复登录入口，体现“生成后仍需人工微调”的真实开发过程。</p>
+          </article>
+
+          <article class="commit-card test">
+            <div class="commit-top"><time class="commit-time">12:52</time><span class="phase-chip">测试设计</span><code class="commit-hash">570a302</code></div>
+            <h3>添加测试用例</h3>
+            <p>设计 152 条测试用例，覆盖主流程、权限与安全、界面、非功能和阶段外功能反向检查。</p>
+          </article>
+
+          <article class="commit-card test">
+            <div class="commit-top"><time class="commit-time">13:23</time><span class="phase-chip">测试执行</span><code class="commit-hash">7972f64</code></div>
+            <h3>执行测试并输出测试报告</h3>
+            <p>通过 API、Playwright E2E、并发、安全、UI 和工程构建检查，输出 151 / 152 通过的测试报告。</p>
+          </article>
+
+          <article class="commit-card fix">
+            <div class="commit-top"><time class="commit-time">13:37</time><span class="phase-chip">修复回归</span><code class="commit-hash">d4d7577</code></div>
+            <h3>修复 S2：并发重复申请</h3>
+            <p>增加部分唯一索引、BEGIN IMMEDIATE 事务串行化与旧库迁移，并完成 30/30 并发复验和报告更新。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="decisions">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">03 · Human in the loop</div>
+            <h2>对话真正产生了哪些决策</h2>
+            <p class="section-copy">
+              AI 的高价值不只是“写代码”，更在于把模糊想法变成一组需要人回答的问题。
+              下面这些决策构成了后续 PRD、实现和测试的共同基线。
+            </p>
+          </div>
+        </div>
+
+        <div class="decision-grid">
+          <article class="decision-card">
+            <span class="decision-index">01</span>
+            <h3>先冻结范围</h3>
+            <p>附件上传、头像编辑、移动端、活动上下文、站内聊天等均不做；本阶段聚焦桌面端 MVP 和核心组队闭环。</p>
+          </article>
+          <article class="decision-card">
+            <span class="decision-index">02</span>
+            <h3>明确角色与手机号权限</h3>
+            <p>区分游客、登录用户、申请人、成员和队长。手机号只对队长、审核场景和队内成员可见。</p>
+          </article>
+          <article class="decision-card">
+            <span class="decision-index">03</span>
+            <h3>定义队伍生命周期</h3>
+            <p>队长手动完成组队、可重新开放招募、可移除成员；预设名额只是规划参考，不自动阻止审核。</p>
+          </article>
+          <article class="decision-card">
+            <span class="decision-index">04</span>
+            <h3>规范申请与审核</h3>
+            <p>文字介绍必填；拒绝理由选填且对申请人可见；被拒后可重新申请；同一队伍不能出现重复 pending 申请。</p>
+          </article>
+          <article class="decision-card">
+            <span class="decision-index">05</span>
+            <h3>用文档固定 AI 上下文</h3>
+            <p><code>AGENTS.md</code> 持续记录技术栈、目录结构和有效文档；<code>draft-edited.md</code> 成为唯一设计基线。</p>
+          </article>
+          <article class="decision-card">
+            <span class="decision-index">06</span>
+            <h3>用退出标准结束项目</h3>
+            <p>P0 用例 100% 通过、无未关闭 S1/S2、P1 通过率不低于 95%；最终仅保留 1 个非阻塞 S4 视觉问题。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="takeaways">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">04 · Teaching notes</div>
+            <h2>给学员的 4 个方法结论</h2>
+            <p class="section-copy">比“AI 一次生成了多少代码”更值得复盘的，是项目如何控制模糊性、范围和风险。</p>
+          </div>
+        </div>
+
+        <div class="takeaway-grid">
+          <article class="takeaway-card">
+            <div class="takeaway-number">01</div>
+            <div>
+              <h3>AI 提问题，人做决策</h3>
+              <p>DSH 以使用者视角补足盲区，但最终由人确认业务规则和本阶段边界。AI 负责扩展选项，人负责做取舍。</p>
+            </div>
+          </article>
+          <article class="takeaway-card">
+            <div class="takeaway-number">02</div>
+            <div>
+              <h3>文档就是 AI 的上下文契约</h3>
+              <p>Idea、draft-edited、PRD、DESIGN 和 AGENTS 分工明确，避免多份文档冲突，也让实现和测试都有同一依据。</p>
+            </div>
+          </article>
+          <article class="takeaway-card">
+            <div class="takeaway-number">03</div>
+            <div>
+              <h3>分阶段冻结，而不是边写边改</h3>
+              <p>先澄清需求和设计，再生成代码；生成之后再通过页面走查做聚焦修改，避免把产品决策混进实现阶段。</p>
+            </div>
+          </article>
+          <article class="takeaway-card">
+            <div class="takeaway-number">04</div>
+            <div>
+              <h3>测试要形成闭环，而不是只出报告</h3>
+              <p>发现并发重复申请后，继续完成原因分析、数据库约束、事务修复、旧库迁移、并发回归和报告更新。</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-row">
+      <div>
+        <strong>HackMate 开发过程复盘</strong><br>
+        数据来源：项目 Git 历史、docs/idea.md、docs/draft.md、docs/draft-edited.md、docs/prd.md、DESIGN.md、docs/test-cases.md、docs/test-report-2026-11-26.md。
+      </div>
+      <div>
+        静态单文件网页 · 无外部依赖<br>
+        流程图使用内联 SVG 绘制，可直接打开、打印或导出 PDF。
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
