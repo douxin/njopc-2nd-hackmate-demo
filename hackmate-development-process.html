@@ -3,1145 +3,2802 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="HackMate 从想法到可验收 MVP 的项目开发流程可视化。">
-  <title>HackMate · 从想法到可验收 MVP</title>
+  <meta name="description" content="HackMate 从想法到可验收 MVP 的 AI 协同开发流程课堂演示文稿。">
+  <title>HackMate · 从想法到可验收 MVP（课堂演示版）</title>
   <style>
-    :root {
-      --bg: #fafafa;
-      --surface: #ffffff;
-      --text: #0a0a0a;
-      --text-2: #5f6368;
-      --text-3: #8b8f98;
-      --border: #e8e8ec;
-      --primary: #6366f1;
-      --primary-dark: #4f46e5;
-      --violet: #8b5cf6;
-      --green: #10b981;
-      --orange: #f59e0b;
-      --red: #ef4444;
-      --teal: #14b8a6;
-      --radius: 14px;
-      --shadow: 0 16px 48px rgba(17, 24, 39, .06);
-      --font: "Avenir Next", "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-      --mono: "SFMono-Regular", "JetBrains Mono", Consolas, "Liberation Mono", monospace;
+    @layer reset, tokens, base, chrome, slides, components, motion, utilities, print;
+
+    @layer reset {
+      :where(
+        html, body, main, header, nav, footer, section, article, aside,
+        div, figure, figcaption, ol, ul, li, h1, h2, h3, p, button, a, code, span, kbd
+      ) {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      :where(h1, h2, h3, p, figure, ol, ul) {
+        margin: 0;
+      }
+
+      :where(ol, ul) {
+        padding: 0;
+        list-style: none;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      button {
+        font: inherit;
+        color: inherit;
+      }
     }
 
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-    }
-    a { color: inherit; }
-    button { font: inherit; }
+    @layer tokens {
+      :root {
+        /* Palette aligned with DESIGN.md (Genesis) */
+        --bg: #fafafa;
+        --bg-studio: #ffffff;
+        --bg-mist: #f3f4f7;
+        --bg-finale: #111216;
+        --bg-finale-card: #181a20;
 
-    .wrap {
-      width: min(1380px, calc(100% - 56px));
-      margin: 0 auto;
-    }
+        --surface: #ffffff;
+        --ink: #0a0a0a;
+        --ink-2: #3f3f46;
+        --ink-3: #6b6b6b;
+        --ink-on-dark: #f4f4f6;
+        --ink-on-dark-2: #c4c6cf;
+        --ink-on-dark-3: #8e92a0;
 
-    .site-nav {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: rgba(250, 250, 250, .86);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    }
-    .nav-inner {
-      min-height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-    }
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      letter-spacing: -.02em;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-    .brand-mark {
-      display: grid;
-      place-items: center;
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
-      background: var(--text);
-      color: #fff;
-      font-size: 14px;
-      font-weight: 800;
-    }
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      margin-left: auto;
-    }
-    .nav-links a {
-      color: var(--text-2);
-      font-size: 13px;
-      font-weight: 600;
-      text-decoration: none;
-      transition: color .2s ease;
-    }
-    .nav-links a:hover { color: var(--primary); }
-    .print-button {
-      border: 1px solid var(--border);
-      background: var(--surface);
-      color: var(--text);
-      border-radius: 8px;
-      padding: 8px 13px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: border-color .2s ease, color .2s ease, transform .2s ease;
-      white-space: nowrap;
-    }
-    .print-button:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-      transform: translateY(-1px);
+        --border: #e8e8ec;
+        --border-strong: #d4d5dd;
+        --border-dark: rgba(255, 255, 255, 0.11);
+
+        /* Interactive primary (Indigo — reserved for interactive highlights per DESIGN.md) */
+        --primary: #6366f1;
+        --primary-hover: #4f46e5;
+        --primary-ring: rgba(99, 102, 241, 0.16);
+
+        /* Phase semantic tokens */
+        --p1-ink: #4338ca;
+        --p1-bg: #eef2ff;
+        --p1-border: #c7d2fe;
+
+        --p2-ink: #6d28d9;
+        --p2-bg: #f5f3ff;
+        --p2-border: #ddd6fe;
+
+        --p3-ink: #047857;
+        --p3-bg: #ecfdf5;
+        --p3-border: #a7f3d0;
+
+        --p4-ink: #b45309;
+        --p4-bg: #fffbeb;
+        --p4-border: #fde68a;
+
+        --p5-ink: #0f766e;
+        --p5-bg: #f0fdfa;
+        --p5-border: #99f6e4;
+
+        --fix-ink: #b91c1c;
+        --fix-bg: #fef2f2;
+        --fix-border: #fecaca;
+
+        /* Radii per DESIGN.md */
+        --r-tag: 4px;
+        --r-btn: 6px;
+        --r-panel: 8px;
+        --r-card: 12px;
+        --r-pill: 9999px;
+
+        /* Typography */
+        --font-display: "General Sans", "Avenir Next", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+        --font-body: "DM Sans", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+        --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, Consolas, "Liberation Mono", monospace;
+
+        /* Classroom-scale spacing & layout */
+        --nav-h: 3.5rem;
+        --slide-max: 86rem;
+        --gutter: clamp(1.25rem, 3.2vw, 3.25rem);
+      }
     }
 
-    .hero {
-      padding: 78px 0 42px;
-    }
-    .hero-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.28fr) minmax(340px, .72fr);
-      gap: 64px;
-      align-items: center;
-    }
-    .eyebrow {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      color: var(--primary-dark);
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-    }
-    .eyebrow::before {
-      content: "";
-      width: 28px;
-      height: 2px;
-      border-radius: 99px;
-      background: var(--primary);
-    }
-    h1 {
-      margin: 0;
-      max-width: 860px;
-      font-size: clamp(38px, 4.6vw, 66px);
-      line-height: 1.04;
-      letter-spacing: -.045em;
-      font-weight: 800;
-    }
-    h1 .accent { color: var(--primary); }
-    .hero-copy {
-      max-width: 720px;
-      margin: 24px 0 0;
-      color: var(--text-2);
-      font-size: 17px;
-      line-height: 1.8;
-    }
-    .hero-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 28px;
-    }
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 7px 11px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: var(--surface);
-      color: var(--text-2);
-      font-size: 12px;
-      font-weight: 650;
-    }
-    .tag-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--primary);
+    @layer base {
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: calc(var(--nav-h) + 0.5rem);
+        color-scheme: light;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.65;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        overflow-wrap: break-word;
+      }
+
+      :where(a:any-link, button, [tabindex="-1"]):focus-visible {
+        outline: 3px solid var(--primary);
+        outline-offset: 3px;
+      }
+
+      code {
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+      }
+
+      .slide-inner {
+        inline-size: min(var(--slide-max), calc(100% - var(--gutter) * 2));
+        margin-inline: auto;
+      }
     }
 
-    .rail-card {
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      background: var(--surface);
-      padding: 24px;
-      box-shadow: var(--shadow);
-    }
-    .rail-heading {
-      margin: 0 0 18px;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      color: var(--text-3);
-    }
-    .rail-list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: grid;
-      gap: 0;
-    }
-    .rail-item {
-      display: grid;
-      grid-template-columns: 20px minmax(0, 1fr) auto;
-      gap: 12px;
-      align-items: start;
-      padding: 11px 0;
-      border-bottom: 1px solid #f0f0f3;
-    }
-    .rail-item:last-child { border-bottom: 0; padding-bottom: 0; }
-    .rail-item:first-child { padding-top: 0; }
-    .rail-dot {
-      width: 9px;
-      height: 9px;
-      margin-top: 7px;
-      border-radius: 50%;
-      background: var(--primary);
-      box-shadow: 0 0 0 4px #eef2ff;
-    }
-    .rail-item:nth-child(2) .rail-dot { background: var(--violet); box-shadow: 0 0 0 4px #f5f3ff; }
-    .rail-item:nth-child(3) .rail-dot { background: var(--green); box-shadow: 0 0 0 4px #ecfdf5; }
-    .rail-item:nth-child(4) .rail-dot { background: var(--orange); box-shadow: 0 0 0 4px #fff7ed; }
-    .rail-item:nth-child(5) .rail-dot { background: var(--teal); box-shadow: 0 0 0 4px #f0fdfa; }
-    .rail-title {
-      font-size: 14px;
-      font-weight: 750;
-      line-height: 1.35;
-    }
-    .rail-sub {
-      margin-top: 2px;
-      color: var(--text-3);
-      font-size: 11px;
-      line-height: 1.45;
-    }
-    .rail-time {
-      padding-top: 1px;
-      color: var(--text-3);
-      font-family: var(--mono);
-      font-size: 10px;
-      white-space: nowrap;
+    @layer chrome {
+      /* Reading progress hairline */
+      .scroll-progress {
+        position: fixed;
+        inset-block-start: 0;
+        inset-inline: 0;
+        block-size: 3px;
+        background: var(--primary);
+        transform-origin: 0 50%;
+        transform: scaleX(0);
+        z-index: 80;
+        pointer-events: none;
+      }
+
+      /* Skip link */
+      .skip-link {
+        position: fixed;
+        inset-block-start: 0.75rem;
+        inset-inline-start: 0.75rem;
+        z-index: 100;
+        padding: 0.625rem 1rem;
+        border-radius: var(--r-btn);
+        background: var(--primary);
+        color: #f9fafb;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      /* Sticky Top Presenter Bar */
+      .deck-header {
+        position: sticky;
+        inset-block-start: 0;
+        z-index: 60;
+        min-block-size: var(--nav-h);
+        background: rgba(250, 250, 250, 0.88);
+        border-block-end: 1px solid var(--border);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+
+      .deck-header-inner {
+        min-block-size: var(--nav-h);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.25rem;
+        padding-block: 0.375rem;
+      }
+
+      .deck-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.625rem;
+        font-family: var(--font-display);
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .deck-brand-mark {
+        display: grid;
+        place-items: center;
+        inline-size: 1.875rem;
+        block-size: 1.875rem;
+        border-radius: var(--r-btn);
+        background: var(--ink);
+        color: #f9fafb;
+        font-size: 0.875rem;
+        font-weight: 800;
+      }
+
+      .deck-nav ul {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      .deck-nav a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        min-block-size: 2.25rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: var(--r-btn);
+        color: var(--ink-3);
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color 0.18s ease, background-color 0.18s ease;
+      }
+
+      .deck-nav a:hover {
+        color: var(--ink);
+        background: #ededf2;
+      }
+
+      .deck-nav a[aria-current="location"] {
+        color: var(--primary-hover);
+        background: var(--p1-bg);
+      }
+
+      .deck-nav-num {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        opacity: 0.75;
+      }
+
+      .deck-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .chrome-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        min-block-size: 2.25rem;
+        padding: 0.4rem 0.85rem;
+        border: 1px solid var(--border-strong);
+        border-radius: var(--r-btn);
+        background: var(--surface);
+        color: var(--ink);
+        font-size: 0.8125rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
+      }
+
+      .chrome-btn:hover:not(:disabled) {
+        border-color: var(--primary);
+        color: var(--primary-hover);
+      }
+
+      /* Floating Presenter Dock (Bottom-Right) */
+      .presenter-dock {
+        position: fixed;
+        inset-block-end: 1.25rem;
+        inset-inline-end: 1.25rem;
+        z-index: 55;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.3rem;
+        border: 1px solid var(--border-strong);
+        border-radius: var(--r-pill);
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow: 0 10px 28px rgba(10, 10, 10, 0.08);
+      }
+
+      .dock-btn {
+        display: grid;
+        place-items: center;
+        min-inline-size: 2.15rem;
+        min-block-size: 2.15rem;
+        border: 0;
+        border-radius: var(--r-pill);
+        background: transparent;
+        color: var(--ink);
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 0.16s ease, color 0.16s ease;
+      }
+
+      .dock-btn:hover:not(:disabled) {
+        background: var(--p1-bg);
+        color: var(--primary-hover);
+      }
+
+      .dock-btn:disabled {
+        opacity: 0.32;
+        cursor: not-allowed;
+      }
+
+      .dock-counter {
+        padding-inline: 0.65rem;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: var(--ink-2);
+        letter-spacing: 0.04em;
+        user-select: none;
+      }
+
+      .dock-hint {
+        padding-inline: 0.5rem 0.65rem;
+        border-inline-start: 1px solid var(--border);
+        font-size: 0.75rem;
+        color: var(--ink-3);
+        white-space: nowrap;
+      }
+
+      .dock-hint kbd {
+        display: inline-block;
+        padding: 0.05rem 0.32rem;
+        border: 1px solid var(--border-strong);
+        border-radius: var(--r-tag);
+        background: var(--bg);
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--ink-2);
+      }
     }
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-      padding: 12px 0 0;
-    }
-    .stat-card {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--surface);
-      padding: 20px 22px;
-    }
-    .stat-value {
-      font-size: 32px;
-      line-height: 1;
-      font-weight: 800;
-      letter-spacing: -.04em;
-    }
-    .stat-value small {
-      color: var(--text-3);
-      font-size: 13px;
-      font-weight: 650;
-      letter-spacing: 0;
-    }
-    .stat-label {
-      margin-top: 8px;
-      color: var(--text-2);
-      font-size: 12px;
-      font-weight: 650;
+    @layer slides {
+      /* Base Slide Band — tall, spacious, no forced 16:9 cramping */
+      .slide {
+        position: relative;
+        padding-block: clamp(4.25rem, 8vh, 6.75rem);
+        border-block-end: 1px solid var(--border);
+      }
+
+      .slide--cover {
+        min-block-size: min(calc(100svh - var(--nav-h)), 58rem);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding-block: clamp(3rem, 7vh, 5.5rem);
+        background-color: var(--bg);
+        /* Interactive dot grid from DESIGN.md */
+        background-image: radial-gradient(rgba(10, 10, 10, 0.11) 1.1px, transparent 1.1px);
+        background-size: 26px 26px;
+        background-position: center top;
+      }
+
+      .slide--studio {
+        background: var(--bg-studio);
+      }
+
+      .slide--canvas {
+        background: var(--bg);
+      }
+
+      .slide--mist {
+        background: var(--bg-mist);
+      }
+
+      .slide--finale {
+        min-block-size: min(92svh, 60rem);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background-color: var(--bg-finale);
+        background-image: radial-gradient(rgba(255, 255, 255, 0.075) 1px, transparent 1px);
+        background-size: 28px 28px;
+        color: var(--ink-on-dark);
+        border-block-end: 0;
+      }
+
+      /* Architectural Slide Top Rail */
+      .slide-rail {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding-block-end: 1.125rem;
+        margin-block-end: clamp(2rem, 4vh, 3.25rem);
+        border-block-end: 1px solid var(--border);
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+
+      .slide--finale .slide-rail {
+        border-block-end-color: var(--border-dark);
+        color: var(--ink-on-dark-3);
+      }
+
+      .slide-rail-left {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .slide-num-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.2rem 0.55rem;
+        border-radius: var(--r-tag);
+        background: var(--ink);
+        color: #f4f4f6;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+      }
+
+      .slide--finale .slide-num-pill {
+        background: #f4f4f6;
+        color: var(--bg-finale);
+      }
+
+      /* Slide Header Block */
+      .slide-head {
+        display: grid;
+        grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr);
+        gap: 1.5rem 3.5rem;
+        align-items: end;
+        margin-block-end: clamp(2.25rem, 4.5vh, 3.5rem);
+      }
+
+      .slide-title {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 1.35rem + 2vw, 3.25rem);
+        font-weight: 800;
+        line-height: 1.12;
+        letter-spacing: -0.035em;
+        text-wrap: balance;
+      }
+
+      .slide-lead {
+        max-inline-size: 52ch;
+        color: var(--ink-2);
+        font-size: clamp(1.0625rem, 0.96rem + 0.35vw, 1.25rem);
+        line-height: 1.65;
+        text-wrap: pretty;
+      }
+
+      .slide--finale .slide-lead {
+        color: var(--ink-on-dark-2);
+      }
     }
 
-    .section {
-      padding: 58px 0;
-      border-top: 1px solid var(--border);
-      margin-top: 46px;
-    }
-    .section:first-of-type { margin-top: 26px; }
-    .section-head {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 40px;
-      margin-bottom: 24px;
-    }
-    .section-kicker {
-      margin-bottom: 8px;
-      color: var(--primary-dark);
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: .13em;
-      text-transform: uppercase;
-    }
-    h2 {
-      margin: 0;
-      font-size: clamp(27px, 3vw, 38px);
-      line-height: 1.16;
-      letter-spacing: -.035em;
-    }
-    .section-copy {
-      max-width: 580px;
-      margin: 10px 0 0;
-      color: var(--text-2);
-      font-size: 14px;
-      line-height: 1.75;
-    }
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px 18px;
-      align-items: center;
-      margin: 0 0 18px;
-      color: var(--text-2);
-      font-size: 12px;
-      font-weight: 650;
-    }
-    .legend-item { display: inline-flex; align-items: center; gap: 7px; }
-    .legend-swatch {
-      width: 10px;
-      height: 10px;
-      border-radius: 3px;
-      border: 1px solid rgba(0, 0, 0, .08);
-    }
-    .legend-line {
-      width: 24px;
-      height: 0;
-      border-top: 2px dashed var(--red);
-      margin-right: 1px;
+    @layer components {
+      /* ================= SLIDE 01: COVER ================= */
+      .cover-stage {
+        background: rgba(250, 250, 250, 0.82);
+        border: 1px solid var(--border);
+        border-radius: var(--r-card);
+        padding: clamp(2.25rem, 5vw, 4.5rem);
+        backdrop-filter: blur(4px);
+      }
+
+      .cover-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem 1.5rem;
+        padding-block-end: 1.5rem;
+        margin-block-end: clamp(2rem, 4.5vh, 3.25rem);
+        border-block-end: 1px solid var(--border);
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        color: var(--ink-3);
+      }
+
+      .cover-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--ink);
+        font-weight: 700;
+      }
+
+      .cover-badge-dot {
+        inline-size: 0.55rem;
+        block-size: 0.55rem;
+        border-radius: var(--r-pill);
+        background: #10b981;
+      }
+
+      .cover-h1 {
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 1.55rem + 3.4vw, 4.85rem);
+        font-weight: 800;
+        line-height: 1.08;
+        letter-spacing: -0.042em;
+        text-wrap: balance;
+      }
+
+      .cover-h1-sub {
+        display: block;
+        margin-block-start: 0.25em;
+        color: var(--ink-2);
+        font-weight: 700;
+      }
+
+      .chain-ribbon {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.7rem 0.6rem;
+        margin-block-start: clamp(2.5rem, 5vh, 3.5rem);
+        padding-block: 1.45rem;
+        border-block: 1px solid var(--border);
+      }
+
+      .chain-node {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1.05rem;
+        border: 1px solid var(--border-strong);
+        border-radius: var(--r-pill);
+        background: var(--surface);
+        color: var(--ink);
+        font-family: var(--font-display);
+        font-size: clamp(0.95rem, 0.9rem + 0.2vw, 1.08rem);
+        font-weight: 700;
+      }
+
+      .chain-arrow {
+        color: var(--ink-3);
+        font-family: var(--font-mono);
+        font-size: 0.95rem;
+        font-weight: 700;
+        user-select: none;
+      }
+
+      .cover-footer {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.25rem;
+        margin-block-start: clamp(2rem, 4vh, 2.75rem);
+      }
+
+      .cover-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        min-block-size: 2.85rem;
+        padding: 0.65rem 1.35rem;
+        border-radius: var(--r-btn);
+        background: var(--primary);
+        color: #f9fafb;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background-color 0.18s ease, box-shadow 0.18s ease;
+      }
+
+      .cover-cta:hover {
+        background: var(--primary-hover);
+        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+      }
+
+      /* ================= SLIDE 02: FIVE PHASES ================= */
+      .phase-deck {
+        display: grid;
+        gap: 1.25rem;
+      }
+
+      .phase-row {
+        display: grid;
+        grid-template-columns: 12.25rem minmax(0, 1fr) minmax(0, 1.42fr) 15.25rem;
+        gap: 1.5rem 2rem;
+        align-items: start;
+        padding: clamp(1.5rem, 2.6vw, 2.15rem);
+        border: 1px solid var(--border);
+        border-inline-start: 4px solid var(--phase-accent, var(--p1-ink));
+        border-radius: var(--r-card);
+        background: var(--surface);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .phase-row:hover {
+        border-color: var(--border-strong);
+        border-inline-start-color: var(--phase-accent, var(--p1-ink));
+        box-shadow: 0 8px 28px rgba(10, 10, 10, 0.06);
+      }
+
+      .phase-row[data-phase="1"] { --phase-accent: var(--p1-ink); --phase-tint: var(--p1-bg); --phase-ring: var(--p1-border); }
+      .phase-row[data-phase="2"] { --phase-accent: var(--p2-ink); --phase-tint: var(--p2-bg); --phase-ring: var(--p2-border); }
+      .phase-row[data-phase="3"] { --phase-accent: var(--p3-ink); --phase-tint: var(--p3-bg); --phase-ring: var(--p3-border); }
+      .phase-row[data-phase="4"] { --phase-accent: var(--p4-ink); --phase-tint: var(--p4-bg); --phase-ring: var(--p4-border); }
+      .phase-row[data-phase="5"] { --phase-accent: var(--p5-ink); --phase-tint: var(--p5-bg); --phase-ring: var(--p5-border); }
+
+      .phase-index-col {
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+      }
+
+      .phase-big-num {
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 2rem + 1.4vw, 3.4rem);
+        font-weight: 800;
+        line-height: 0.95;
+        letter-spacing: -0.05em;
+        color: var(--phase-accent);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .phase-time {
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--ink-3);
+      }
+
+      .phase-role-pill {
+        display: inline-flex;
+        align-self: flex-start;
+        margin-block-start: 0.25rem;
+        padding: 0.25rem 0.6rem;
+        border: 1px solid var(--phase-ring);
+        border-radius: var(--r-tag);
+        background: var(--phase-tint);
+        color: var(--phase-accent);
+        font-size: 0.8125rem;
+        font-weight: 700;
+        line-height: 1.35;
+      }
+
+      .phase-mission-col h3 {
+        font-family: var(--font-display);
+        font-size: clamp(1.35rem, 1.15rem + 0.55vw, 1.7rem);
+        font-weight: 800;
+        line-height: 1.2;
+        letter-spacing: -0.025em;
+      }
+
+      .phase-mission-label {
+        margin-block-start: 0.75rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+
+      .phase-mission-text {
+        margin-block-start: 0.25rem;
+        color: var(--ink-2);
+        font-size: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+        line-height: 1.65;
+        text-wrap: pretty;
+      }
+
+      .phase-tasks-col-label,
+      .phase-outputs-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-block-end: 0.55rem;
+      }
+
+      .phase-task-list {
+        display: grid;
+        gap: 0.55rem;
+      }
+
+      .phase-task-list li {
+        position: relative;
+        padding-inline-start: 1.15rem;
+        color: var(--ink);
+        font-size: clamp(0.98rem, 0.94rem + 0.18vw, 1.08rem);
+        line-height: 1.6;
+      }
+
+      .phase-task-list li::before {
+        content: "";
+        position: absolute;
+        inset-inline-start: 0;
+        inset-block-start: 0.62em;
+        inline-size: 0.42rem;
+        block-size: 0.42rem;
+        border-radius: var(--r-pill);
+        background: var(--phase-accent);
+      }
+
+      .phase-outputs {
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+        padding-inline-start: 1.25rem;
+        border-inline-start: 1px solid var(--border);
+      }
+
+      .artifact-chip {
+        display: inline-flex;
+        align-self: flex-start;
+        padding: 0.3rem 0.65rem;
+        border: 1px solid var(--border);
+        border-radius: var(--r-tag);
+        background: var(--bg);
+        color: var(--ink-2);
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        font-weight: 600;
+        line-height: 1.35;
+      }
+
+      /* ================= SLIDE 03: FLOWCHART ================= */
+      .flow-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem 1.5rem;
+        margin-block-end: 1.25rem;
+      }
+
+      .phase-filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .filter-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-block-size: 2.35rem;
+        padding: 0.4rem 0.9rem;
+        border: 1px solid var(--border-strong);
+        border-radius: var(--r-pill);
+        background: var(--surface);
+        color: var(--ink-2);
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+      }
+
+      .filter-pill:hover {
+        border-color: var(--primary);
+        color: var(--ink);
+      }
+
+      .filter-pill[aria-pressed="true"] {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #f9fafb;
+      }
+
+      .filter-pill[aria-pressed="true"] .swatch {
+        border-color: rgba(255, 255, 255, 0.7);
+      }
+
+      .swatch {
+        inline-size: 0.7rem;
+        block-size: 0.7rem;
+        border-radius: 3px;
+        border: 1px solid rgba(0, 0, 0, 0.14);
+        flex: 0 0 auto;
+      }
+
+      .loop-legend {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        color: var(--ink-2);
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      .loop-legend-line {
+        inline-size: 1.75rem;
+        border-block-start: 2.5px dashed #ef4444;
+      }
+
+      .flow-figure {
+        border: 1px solid var(--border);
+        border-radius: var(--r-card);
+        background: var(--surface);
+        padding: clamp(0.75rem, 1.8vw, 1.5rem);
+      }
+
+      .flow-scroll {
+        overflow-x: auto;
+      }
+
+      .flow-svg {
+        display: block;
+        inline-size: 100%;
+        min-inline-size: 980px;
+        block-size: auto;
+      }
+
+      /* Interactive phase focus dim effect inside SVG */
+      .flow-svg[data-active-phase] .phase-group {
+        transition: opacity 0.22s ease;
+      }
+
+      .flow-svg[data-active-phase="1"] .phase-group:not([data-phase="1"]),
+      .flow-svg[data-active-phase="2"] .phase-group:not([data-phase="2"]),
+      .flow-svg[data-active-phase="3"] .phase-group:not([data-phase="3"]),
+      .flow-svg[data-active-phase="4"] .phase-group:not([data-phase="4"]),
+      .flow-svg[data-active-phase="5"] .phase-group:not([data-phase="5"]) {
+        opacity: 0.2;
+      }
+
+      .flow-svg[data-active-phase] .inter-phase-arrow {
+        opacity: 0.35;
+        transition: opacity 0.22s ease;
+      }
+
+      .flow-caption {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem 1.5rem;
+        margin-block-start: 1.25rem;
+        padding-block-start: 1rem;
+        border-block-start: 1px solid var(--border);
+        color: var(--ink-2);
+        font-size: 0.9375rem;
+      }
+
+      .flow-s4-note {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.45rem 0.85rem;
+        border: 1px solid var(--p4-border);
+        border-radius: var(--r-panel);
+        background: var(--p4-bg);
+        color: #92400e;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      /* ================= SLIDE 04: GIT TIMELINE ================= */
+      .git-filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-block-end: 2rem;
+      }
+
+      .git-chapters {
+        display: grid;
+        gap: clamp(2rem, 4vh, 3rem);
+      }
+
+      .git-chapter {
+        display: grid;
+        grid-template-columns: 16.5rem minmax(0, 1fr);
+        gap: 1.5rem 2.75rem;
+        align-items: start;
+      }
+
+      .git-chapter[hidden] {
+        display: none;
+      }
+
+      .git-chapter-aside {
+        position: sticky;
+        inset-block-start: calc(var(--nav-h) + 1.5rem);
+        padding: 1.25rem 1.35rem;
+        border: 1px solid var(--border);
+        border-block-start: 3px solid var(--ch-accent, var(--p1-ink));
+        border-radius: var(--r-card);
+        background: var(--bg);
+      }
+
+      .git-chapter[data-phase="1"] { --ch-accent: var(--p1-ink); --ch-tint: var(--p1-bg); --ch-border: var(--p1-border); }
+      .git-chapter[data-phase="2"] { --ch-accent: var(--p2-ink); --ch-tint: var(--p2-bg); --ch-border: var(--p2-border); }
+      .git-chapter[data-phase="3"] { --ch-accent: var(--p3-ink); --ch-tint: var(--p3-bg); --ch-border: var(--p3-border); }
+      .git-chapter[data-phase="4"] { --ch-accent: var(--p4-ink); --ch-tint: var(--p4-bg); --ch-border: var(--p4-border); }
+
+      .git-chapter-kicker {
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        color: var(--ch-accent);
+      }
+
+      .git-chapter-aside h3 {
+        margin-block-start: 0.3rem;
+        font-family: var(--font-display);
+        font-size: 1.4rem;
+        font-weight: 800;
+        line-height: 1.25;
+        letter-spacing: -0.02em;
+      }
+
+      .git-chapter-time {
+        margin-block-start: 0.35rem;
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        color: var(--ink-3);
+      }
+
+      .git-chapter-summary {
+        margin-block-start: 0.75rem;
+        color: var(--ink-2);
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+
+      .commit-spine {
+        position: relative;
+        display: grid;
+        gap: 1rem;
+        padding-inline-start: 1.75rem;
+      }
+
+      .commit-spine::before {
+        content: "";
+        position: absolute;
+        inset-inline-start: 0.42rem;
+        inset-block: 1.35rem;
+        inline-size: 2px;
+        background: var(--border-strong);
+      }
+
+      .commit-item {
+        position: relative;
+        padding: 1.35rem 1.6rem;
+        border: 1px solid var(--border);
+        border-radius: var(--r-card);
+        background: var(--surface);
+        transition: border-color 0.18s ease, box-shadow 0.18s ease;
+      }
+
+      .commit-item::before {
+        content: "";
+        position: absolute;
+        inset-inline-start: -1.66rem;
+        inset-block-start: 1.6rem;
+        inline-size: 0.72rem;
+        block-size: 0.72rem;
+        border-radius: var(--r-pill);
+        background: var(--ch-accent);
+        box-shadow: 0 0 0 4px var(--surface);
+      }
+
+      .commit-item:hover {
+        border-color: var(--border-strong);
+        box-shadow: 0 8px 24px rgba(10, 10, 10, 0.06);
+      }
+
+      .commit-item--pivot {
+        background: var(--bg);
+        border-color: var(--ch-border);
+      }
+
+      .commit-item--fix {
+        --ch-accent: var(--fix-ink);
+        --ch-tint: var(--fix-bg);
+        --ch-border: var(--fix-border);
+        background: #fffafa;
+        border-color: var(--fix-border);
+      }
+
+      .commit-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.65rem;
+        margin-block-end: 0.55rem;
+      }
+
+      .commit-time {
+        font-family: var(--font-mono);
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--ink);
+      }
+
+      .commit-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.18rem 0.6rem;
+        border-radius: var(--r-pill);
+        background: var(--ch-tint);
+        color: var(--ch-accent);
+        font-size: 0.8125rem;
+        font-weight: 700;
+      }
+
+      .commit-pivot-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.18rem 0.55rem;
+        border-radius: var(--r-tag);
+        background: var(--ink);
+        color: #f4f4f6;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+
+      .commit-hash {
+        margin-inline-start: auto;
+        padding: 0.15rem 0.5rem;
+        border: 1px solid var(--border);
+        border-radius: var(--r-tag);
+        background: var(--surface);
+        color: var(--ink-3);
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+      }
+
+      .commit-item h4 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: clamp(1.18rem, 1.05rem + 0.35vw, 1.38rem);
+        font-weight: 750;
+        line-height: 1.32;
+        letter-spacing: -0.02em;
+      }
+
+      .commit-item p {
+        margin-block-start: 0.45rem;
+        color: var(--ink-2);
+        font-size: clamp(1rem, 0.96rem + 0.16vw, 1.08rem);
+        line-height: 1.65;
+      }
+
+      /* ================= SLIDE 05: KEY DECISIONS ================= */
+      .decision-matrix {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.5rem;
+      }
+
+      .decision-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 1.25rem;
+        padding: clamp(1.6rem, 2.8vw, 2.25rem);
+        border: 1px solid var(--border);
+        border-radius: var(--r-card);
+        background: var(--surface);
+        transition: border-color 0.18s ease, box-shadow 0.18s ease;
+      }
+
+      .decision-card:hover {
+        border-color: var(--border-strong);
+        box-shadow: 0 8px 30px rgba(10, 10, 10, 0.07);
+      }
+
+      .decision-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .decision-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-inline-size: 2.5rem;
+        min-block-size: 2.5rem;
+        padding-inline: 0.5rem;
+        border-radius: var(--r-panel);
+        background: var(--dc-bg, var(--p1-bg));
+        color: var(--dc-ink, var(--p1-ink));
+        font-family: var(--font-mono);
+        font-size: 0.95rem;
+        font-weight: 800;
+      }
+
+      .decision-domain {
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        color: var(--ink-3);
+      }
+
+      .decision-card:nth-child(1) { --dc-bg: var(--p1-bg); --dc-ink: var(--p1-ink); }
+      .decision-card:nth-child(2) { --dc-bg: var(--p2-bg); --dc-ink: var(--p2-ink); }
+      .decision-card:nth-child(3) { --dc-bg: var(--p3-bg); --dc-ink: var(--p3-ink); }
+      .decision-card:nth-child(4) { --dc-bg: var(--p4-bg); --dc-ink: var(--p4-ink); }
+      .decision-card:nth-child(5) { --dc-bg: var(--fix-bg); --dc-ink: var(--fix-ink); }
+      .decision-card:nth-child(6) { --dc-bg: var(--p5-bg); --dc-ink: var(--p5-ink); }
+
+      .decision-card h3 {
+        margin-block-start: 1rem;
+        font-family: var(--font-display);
+        font-size: clamp(1.35rem, 1.15rem + 0.45vw, 1.6rem);
+        font-weight: 800;
+        line-height: 1.25;
+        letter-spacing: -0.025em;
+      }
+
+      .decision-card p {
+        margin-block-start: 0.6rem;
+        color: var(--ink-2);
+        font-size: clamp(1rem, 0.96rem + 0.18vw, 1.125rem);
+        line-height: 1.65;
+        text-wrap: pretty;
+      }
+
+      .decision-rule {
+        padding: 0.85rem 1.05rem;
+        border-inline-start: 3px solid var(--dc-ink);
+        border-radius: var(--r-panel);
+        background: var(--bg);
+        color: var(--ink);
+        font-size: 0.95rem;
+        font-weight: 600;
+        line-height: 1.55;
+      }
+
+      .decision-rule-label {
+        color: var(--dc-ink);
+        font-weight: 800;
+        margin-inline-end: 0.35rem;
+      }
+
+      /* ================= SLIDE 06: KEYNOTE FINALE ================= */
+      .takeaway-matrix {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.5rem;
+      }
+
+      .takeaway-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 1.5rem;
+        padding: clamp(1.85rem, 3vw, 2.5rem);
+        border: 1px solid var(--border-dark);
+        border-radius: var(--r-card);
+        background: var(--bg-finale-card);
+        transition: border-color 0.2s ease, background-color 0.2s ease;
+      }
+
+      .takeaway-card:hover {
+        border-color: rgba(255, 255, 255, 0.24);
+        background: #1d2028;
+      }
+
+      .takeaway-num {
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 2rem + 1.4vw, 3.5rem);
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.05em;
+        color: var(--tk-accent, #818cf8);
+      }
+
+      .takeaway-card:nth-child(1) { --tk-accent: #818cf8; }
+      .takeaway-card:nth-child(2) { --tk-accent: #a78bfa; }
+      .takeaway-card:nth-child(3) { --tk-accent: #34d399; }
+      .takeaway-card:nth-child(4) { --tk-accent: #fbbf24; }
+
+      .takeaway-card h3 {
+        margin-block-start: 0.85rem;
+        font-family: var(--font-display);
+        font-size: clamp(1.45rem, 1.2rem + 0.65vw, 1.85rem);
+        font-weight: 800;
+        line-height: 1.22;
+        letter-spacing: -0.03em;
+        color: var(--ink-on-dark);
+        text-wrap: balance;
+      }
+
+      .takeaway-card p {
+        margin-block-start: 0.75rem;
+        color: var(--ink-on-dark-2);
+        font-size: clamp(1.02rem, 0.96rem + 0.2vw, 1.15rem);
+        line-height: 1.7;
+        text-wrap: pretty;
+      }
+
+      .takeaway-formula {
+        padding-block-start: 1rem;
+        border-block-start: 1px solid var(--border-dark);
+        font-family: var(--font-mono);
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: var(--tk-accent);
+      }
+
+      .deck-colophon {
+        margin-block-start: clamp(3rem, 6vh, 4.5rem);
+        padding-block-start: 1.75rem;
+        border-block-start: 1px solid var(--border-dark);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 1rem 2rem;
+        color: var(--ink-on-dark-3);
+        font-size: 0.875rem;
+        line-height: 1.75;
+      }
+
+      .deck-colophon strong {
+        color: var(--ink-on-dark-2);
+      }
     }
 
-    .chart-shell {
-      overflow-x: auto;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      background: var(--surface);
-      padding: 14px;
-      box-shadow: 0 18px 60px rgba(17, 24, 39, .045);
-    }
-    .chart-shell svg {
-      display: block;
-      width: 100%;
-      min-width: 1120px;
-      height: auto;
-    }
-    .chart-note {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      margin: 12px 2px 0;
-      color: var(--text-3);
-      font-size: 11px;
-      line-height: 1.6;
-    }
-    .chart-note strong { color: var(--text-2); }
-    .warning-note {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      margin-top: 12px;
-      padding: 7px 10px;
-      border: 1px solid #fed7aa;
-      border-radius: 8px;
-      background: #fff7ed;
-      color: #9a3412;
-      font-size: 11px;
-      font-weight: 650;
-    }
-    .warning-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--orange);
-      flex: 0 0 auto;
+    @layer motion {
+      @media (prefers-reduced-motion: no-preference) {
+        /* Compositor-only subtle lift on interactive buttons and cards */
+        .chrome-btn:hover:not(:disabled),
+        .cover-cta:hover {
+          translate: 0 -1px;
+          transition: translate 0.18s ease, border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease, color 0.18s ease;
+        }
+
+        .phase-row:hover,
+        .commit-item:hover,
+        .decision-card:hover {
+          translate: 0 -2px;
+          transition: translate 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        /* Native CSS Scroll-Driven Top Progress Bar */
+        @supports (animation-timeline: scroll()) {
+          @keyframes grow-progress {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+          }
+
+          .scroll-progress {
+            animation: grow-progress auto linear both;
+            animation-timeline: scroll(root block);
+          }
+        }
+
+        /* Decorative progressive-enhancement slide card entry reveal */
+        @supports ((animation-timeline: view()) and (animation-range: entry)) {
+          @keyframes slide-reveal {
+            from {
+              opacity: 0.25;
+              translate: 0 22px;
+            }
+            to {
+              opacity: 1;
+              translate: 0 0;
+            }
+          }
+
+          .reveal-item {
+            animation: slide-reveal auto linear both;
+            animation-timeline: view();
+            animation-range: entry 0% entry 24%;
+          }
+        }
+      }
     }
 
-    .timeline-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-    .commit-card {
-      position: relative;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: var(--surface);
-      padding: 17px 18px 16px;
-      overflow: hidden;
-      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
-    }
-    .commit-card::before {
-      content: "";
-      position: absolute;
-      inset: 0 auto 0 0;
-      width: 3px;
-      background: var(--primary);
-    }
-    .commit-card.design::before { background: var(--violet); }
-    .commit-card.dev::before { background: var(--green); }
-    .commit-card.test::before { background: var(--orange); }
-    .commit-card.fix::before { background: var(--red); }
-    .commit-card:hover {
-      transform: translateY(-2px);
-      border-color: #d9dae3;
-      box-shadow: 0 10px 28px rgba(17, 24, 39, .06);
-    }
-    .commit-top {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
-    }
-    .commit-time {
-      color: var(--text-3);
-      font-family: var(--mono);
-      font-size: 10px;
-      font-weight: 650;
-    }
-    .phase-chip {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 7px;
-      border-radius: 999px;
-      background: #eef2ff;
-      color: #4338ca;
-      font-size: 9px;
-      font-weight: 750;
-      letter-spacing: .03em;
-    }
-    .commit-card.design .phase-chip { background: #f5f3ff; color: #6d28d9; }
-    .commit-card.dev .phase-chip { background: #ecfdf5; color: #047857; }
-    .commit-card.test .phase-chip { background: #fff7ed; color: #b45309; }
-    .commit-card.fix .phase-chip { background: #fef2f2; color: #b91c1c; }
-    .commit-hash {
-      margin-left: auto;
-      padding: 2px 6px;
-      border: 1px solid #ececf1;
-      border-radius: 5px;
-      background: #fbfbfc;
-      color: var(--text-3);
-      font-family: var(--mono);
-      font-size: 9px;
-    }
-    .commit-card h3 {
-      margin: 0;
-      font-size: 14px;
-      line-height: 1.45;
-      letter-spacing: -.012em;
-    }
-    .commit-card p {
-      margin: 5px 0 0;
-      color: var(--text-2);
-      font-size: 11.5px;
-      line-height: 1.65;
+    @layer utilities {
+      .visually-hidden:where(:not(:focus-within, :active)) {
+        position: absolute !important;
+        clip-path: inset(50%) !important;
+        overflow: hidden !important;
+        inline-size: 1px !important;
+        block-size: 1px !important;
+        margin: -1px !important;
+        padding: 0 !important;
+        border: 0 !important;
+        white-space: nowrap !important;
+      }
+
+      /* Responsive breakpoints */
+      @media (max-width: 1120px) {
+        .deck-nav {
+          display: none;
+        }
+
+        .slide-head {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+
+        .phase-row {
+          grid-template-columns: 8.5rem minmax(0, 1fr);
+        }
+
+        .phase-tasks-col {
+          grid-column: 1 / -1;
+        }
+
+        .phase-outputs {
+          grid-column: 1 / -1;
+          flex-direction: row;
+          flex-wrap: wrap;
+          align-items: center;
+          padding-inline-start: 0;
+          padding-block-start: 1rem;
+          border-inline-start: 0;
+          border-block-start: 1px solid var(--border);
+        }
+
+        .phase-outputs-label {
+          inline-size: 100%;
+          margin-block-end: 0.15rem;
+        }
+
+        .git-chapter {
+          grid-template-columns: 1fr;
+        }
+
+        .git-chapter-aside {
+          position: static;
+        }
+      }
+
+      @media (max-width: 820px) {
+        .decision-matrix,
+        .takeaway-matrix {
+          grid-template-columns: 1fr;
+        }
+
+        .phase-row {
+          grid-template-columns: 1fr;
+        }
+
+        .dock-hint {
+          display: none;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .deck-actions .chrome-btn[data-action="fullscreen"] {
+          display: none;
+        }
+
+        .presenter-dock {
+          inset-block-end: 0.75rem;
+          inset-inline-end: 0.75rem;
+        }
+
+        .commit-spine {
+          padding-inline-start: 1.25rem;
+        }
+
+        .commit-item::before {
+          inset-inline-start: -1.16rem;
+        }
+      }
+
+      /* Forced Colors Mode (Windows High Contrast) */
+      @media (forced-colors: active) {
+        .phase-row,
+        .commit-item,
+        .decision-card,
+        .takeaway-card,
+        .flow-figure,
+        .presenter-dock {
+          border: 1px solid CanvasText;
+        }
+
+        .deck-nav a[aria-current="location"],
+        .filter-pill[aria-pressed="true"] {
+          outline: 2px solid Highlight;
+        }
+
+        .scroll-progress {
+          background: Highlight;
+        }
+      }
     }
 
-    .decision-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-    }
-    .decision-card {
-      min-height: 176px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--surface);
-      padding: 22px;
-    }
-    .decision-index {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 27px;
-      height: 27px;
-      border-radius: 8px;
-      background: #eef2ff;
-      color: var(--primary-dark);
-      font-size: 11px;
-      font-weight: 800;
-      margin-bottom: 18px;
-    }
-    .decision-card:nth-child(2) .decision-index { background: #f5f3ff; color: #6d28d9; }
-    .decision-card:nth-child(3) .decision-index { background: #ecfdf5; color: #047857; }
-    .decision-card:nth-child(4) .decision-index { background: #fff7ed; color: #b45309; }
-    .decision-card:nth-child(5) .decision-index { background: #fef2f2; color: #b91c1c; }
-    .decision-card:nth-child(6) .decision-index { background: #f0fdfa; color: #0f766e; }
-    .decision-card h3 {
-      margin: 0 0 8px;
-      font-size: 16px;
-      letter-spacing: -.02em;
-    }
-    .decision-card p {
-      margin: 0;
-      color: var(--text-2);
-      font-size: 12.5px;
-      line-height: 1.7;
-    }
-    .decision-card code {
-      font-family: var(--mono);
-      font-size: .92em;
-      color: var(--text);
-    }
+    @layer print {
+      @media print {
+        @page {
+          size: A4 landscape;
+          margin: 10mm;
+        }
 
-    .takeaway-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-    .takeaway-card {
-      display: grid;
-      grid-template-columns: 58px minmax(0, 1fr);
-      gap: 20px;
-      align-items: start;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--surface);
-      padding: 24px;
-    }
-    .takeaway-number {
-      color: var(--primary);
-      font-size: 40px;
-      line-height: .95;
-      font-weight: 800;
-      letter-spacing: -.06em;
-    }
-    .takeaway-card:nth-child(2) .takeaway-number { color: var(--violet); }
-    .takeaway-card:nth-child(3) .takeaway-number { color: var(--green); }
-    .takeaway-card:nth-child(4) .takeaway-number { color: var(--orange); }
-    .takeaway-card h3 {
-      margin: 2px 0 8px;
-      font-size: 16px;
-      letter-spacing: -.02em;
-    }
-    .takeaway-card p {
-      margin: 0;
-      color: var(--text-2);
-      font-size: 12.5px;
-      line-height: 1.7;
-    }
+        html {
+          scroll-behavior: auto;
+        }
 
-    .footer {
-      margin-top: 54px;
-      padding: 30px 0 44px;
-      border-top: 1px solid var(--border);
-      color: var(--text-3);
-      font-size: 11px;
-      line-height: 1.8;
-    }
-    .footer strong { color: var(--text-2); }
-    .footer-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 24px;
-      align-items: flex-start;
-    }
+        body {
+          background: #ffffff;
+          color: #0a0a0a;
+        }
 
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
+        .scroll-progress,
+        .deck-header,
+        .presenter-dock,
+        .phase-filter-bar,
+        .git-filter-bar,
+        .cover-cta {
+          display: none !important;
+        }
 
-    @media (max-width: 1050px) {
-      .hero-grid { grid-template-columns: 1fr; gap: 34px; }
-      .rail-card { max-width: 680px; }
-      .nav-links { display: none; }
-      .decision-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
+        .slide {
+          min-block-size: auto !important;
+          padding-block: 1.5rem;
+          background: #ffffff !important;
+          background-image: none !important;
+          color: #0a0a0a !important;
+          break-after: page;
+          page-break-after: always;
+        }
 
-    @media (max-width: 760px) {
-      .wrap { width: min(100% - 32px, 1380px); }
-      .hero { padding-top: 48px; }
-      .hero-copy { font-size: 15px; }
-      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .timeline-grid, .decision-grid, .takeaway-grid { grid-template-columns: 1fr; }
-      .section { padding: 44px 0; margin-top: 28px; }
-      .section-head { display: block; }
-      .section-copy { margin-top: 12px; }
-      .print-button { display: none; }
-      .footer-row { display: block; }
-      .footer-row > * + * { margin-top: 12px; }
-      .chart-shell { border-radius: 14px; padding: 8px; }
-      .takeaway-card { grid-template-columns: 44px minmax(0, 1fr); gap: 14px; padding: 20px; }
-      .takeaway-number { font-size: 32px; }
-    }
+        .slide:last-of-type {
+          break-after: auto;
+          page-break-after: auto;
+        }
 
-    @media print {
-      @page { size: A4 landscape; margin: 10mm; }
-      body { background: #fff; }
-      .site-nav, .print-button, .hero-tags, .chart-note .print-hide { display: none !important; }
-      .wrap { width: 100%; }
-      .hero { padding: 0 0 20px; }
-      .hero h1 { font-size: 34px; }
-      .rail-card, .chart-shell, .commit-card, .decision-card, .takeaway-card { box-shadow: none; }
-      .section { break-inside: avoid; page-break-inside: avoid; padding: 24px 0; margin-top: 12px; }
-      .chart-shell { overflow: visible; padding: 0; border: 0; }
-      .chart-shell svg { min-width: 0; }
-      .legend { break-after: avoid; }
-      .timeline-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .decision-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .takeaway-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .commit-card:hover { transform: none; box-shadow: none; }
+        .slide--finale .slide-rail,
+        .slide--finale .slide-lead,
+        .slide--finale .takeaway-card,
+        .slide--finale .takeaway-card h3,
+        .slide--finale .takeaway-card p,
+        .slide--finale .takeaway-formula,
+        .slide--finale .deck-colophon,
+        .slide--finale .deck-colophon strong {
+          background: #ffffff !important;
+          color: #0a0a0a !important;
+          border-color: #d4d5dd !important;
+        }
+
+        .slide--finale .slide-num-pill {
+          background: #0a0a0a !important;
+          color: #ffffff !important;
+        }
+
+        .flow-figure {
+          border: 0;
+          padding: 0;
+        }
+
+        .flow-scroll {
+          overflow: visible;
+        }
+
+        .flow-svg {
+          min-inline-size: 0;
+        }
+
+        .git-chapter[hidden] {
+          display: grid !important;
+        }
+
+        .git-chapter-aside {
+          position: static;
+        }
+
+        .phase-row,
+        .commit-item,
+        .decision-card,
+        .takeaway-card {
+          box-shadow: none !important;
+          break-inside: avoid;
+        }
+      }
     }
   </style>
 </head>
 <body>
-  <header class="site-nav">
-    <div class="wrap nav-inner">
-      <a class="brand" href="#top" aria-label="回到页面顶部">
-        <span class="brand-mark">H</span>
-        <span>HackMate · 开发流程</span>
+  <div class="scroll-progress" aria-hidden="true"></div>
+  <a href="#slide-1-heading" class="skip-link visually-hidden">跳至演示正文</a>
+
+  <header class="deck-header">
+    <div class="slide-inner deck-header-inner">
+      <a class="deck-brand" href="#slide-1">
+        <span class="deck-brand-mark" aria-hidden="true">H</span>
+        <span>HackMate · 课堂复盘</span>
       </a>
-      <nav class="nav-links" aria-label="页面导航">
-        <a href="#flow">流程图</a>
-        <a href="#timeline">Git 时间线</a>
-        <a href="#decisions">关键决策</a>
-        <a href="#takeaways">教学要点</a>
+
+      <nav class="deck-nav" aria-label="幻灯片章节">
+        <ul>
+          <li><a href="#slide-1" data-slide-link="slide-1" aria-current="location"><span class="deck-nav-num">01</span>封面</a></li>
+          <li><a href="#slide-2" data-slide-link="slide-2"><span class="deck-nav-num">02</span>五个阶段</a></li>
+          <li><a href="#slide-3" data-slide-link="slide-3"><span class="deck-nav-num">03</span>流程图</a></li>
+          <li><a href="#slide-4" data-slide-link="slide-4"><span class="deck-nav-num">04</span>提交轨迹</a></li>
+          <li><a href="#slide-5" data-slide-link="slide-5"><span class="deck-nav-num">05</span>关键决策</a></li>
+          <li><a href="#slide-6" data-slide-link="slide-6"><span class="deck-nav-num">06</span>方法结论</a></li>
+        </ul>
       </nav>
-      <button class="print-button" type="button" onclick="window.print()">打印 / 导出 PDF</button>
+
+      <div class="deck-actions">
+        <button class="chrome-btn" type="button" data-action="fullscreen">全屏演示</button>
+        <button class="chrome-btn" type="button" data-action="print">导出 PDF</button>
+      </div>
     </div>
   </header>
 
-  <main id="top">
-    <section class="hero">
-      <div class="wrap">
-        <div class="hero-grid">
-          <div>
-            <div class="eyebrow">Project retrospective · 2026-11-26</div>
-            <h1>从想法到可验收 MVP<br><span class="accent">HackMate 的 AI 协同开发流程</span></h1>
-            <p class="hero-copy">
-              这不是一张“功能清单”，而是一条可复盘的工作链：
-              <strong>需求澄清 → AI 评审 → 人工决策 → 规格冻结 → 全栈实现 → 测试闭环 → 修复交付</strong>。
-              图中的每个节点，都能在 Git 提交和项目文档中找到对应证据。
-            </p>
-            <div class="hero-tags" aria-label="项目关键词">
-              <span class="tag"><span class="tag-dot"></span>14 次 Git 提交</span>
-              <span class="tag"><span class="tag-dot" style="background:var(--violet)"></span>13 个关键步骤</span>
-              <span class="tag"><span class="tag-dot" style="background:var(--orange)"></span>152 条测试用例</span>
-              <span class="tag"><span class="tag-dot" style="background:var(--teal)"></span>可继续迭代的 MVP</span>
-            </div>
+  <main>
+    <!-- =================================================================
+         SLIDE 01 · COVER
+         ================================================================= -->
+    <section class="slide slide--cover" id="slide-1" data-slide-index="1">
+      <div class="slide-inner">
+        <div class="cover-stage">
+          <div class="cover-meta">
+            <span class="cover-badge">
+              <span class="cover-badge-dot" aria-hidden="true"></span>
+              <span>HACKMATE · AI 协同开发实战复盘</span>
+            </span>
+            <span>2026-11-26 · 课堂演示版</span>
           </div>
 
-          <aside class="rail-card" aria-label="五个开发阶段">
-            <h2 class="rail-heading">Five phases · 五个阶段</h2>
-            <ol class="rail-list">
-              <li class="rail-item">
-                <span class="rail-dot" aria-hidden="true"></span>
-                <span>
-                  <span class="rail-title">需求定义</span>
-                  <span class="rail-sub">Idea、AI 评审、人工回答</span>
-                </span>
-                <span class="rail-time">08:53–10:00</span>
+          <h1 class="cover-h1" id="slide-1-heading" tabindex="-1">
+            从想法到可验收 MVP
+            <span class="cover-h1-sub">HackMate 的 AI 协同开发流程</span>
+          </h1>
+
+          <div class="chain-ribbon" aria-label="核心工作链">
+            <span class="chain-node">需求澄清</span>
+            <span class="chain-arrow" aria-hidden="true">→</span>
+            <span class="chain-node">AI 评审</span>
+            <span class="chain-arrow" aria-hidden="true">→</span>
+            <span class="chain-node">人工决策</span>
+            <span class="chain-arrow" aria-hidden="true">→</span>
+            <span class="chain-node">规格冻结</span>
+            <span class="chain-arrow" aria-hidden="true">→</span>
+            <span class="chain-node">全栈实现</span>
+            <span class="chain-arrow" aria-hidden="true">→</span>
+            <span class="chain-node">测试闭环</span>
+            <span class="chain-arrow" aria-hidden="true">→</span>
+            <span class="chain-node">修复交付</span>
+          </div>
+
+          <div class="cover-footer">
+            <a class="cover-cta" href="#slide-2">
+              <span>进入下一节：五个开发阶段</span>
+              <span aria-hidden="true">↓</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         SLIDE 02 · FIVE PHASES (CLEAR MISSION, TASKS, ARTIFACTS)
+         ================================================================= -->
+    <section class="slide slide--studio" id="slide-2" data-slide-index="2">
+      <div class="slide-inner">
+        <div class="slide-rail">
+          <span class="slide-rail-left">
+            <span class="slide-num-pill">02 / 06</span>
+            <span>FIVE PHASES</span>
+          </span>
+          <span>全景拆解 · 每个阶段干什么</span>
+        </div>
+
+        <div class="slide-head">
+          <h2 class="slide-title">五个开发阶段：目标、任务与产出</h2>
+          <p class="slide-lead">
+            把模糊创意拆成五个边界清晰的阶段——每个阶段解决一类核心不确定性，并留下可核验的仓库产物。
+          </p>
+        </div>
+
+        <ol class="phase-deck" role="list">
+          <!-- Phase 01 -->
+          <li class="phase-row reveal-item" data-phase="1">
+            <div class="phase-index-col">
+              <span class="phase-big-num">01</span>
+              <span class="phase-time">08:53 – 09:47</span>
+              <span class="phase-role-pill">人提想法 · AI 评审 · 人拍板</span>
+            </div>
+
+            <div class="phase-mission-col">
+              <h3>需求定义</h3>
+              <div class="phase-mission-label">这个阶段干啥的</div>
+              <p class="phase-mission-text">
+                把脑中模糊的产品创意写成清晰起点，让 AI 提前暴露隐含的设计盲区，并由人逐项敲定业务规则与不做项。
+              </p>
+            </div>
+
+            <div class="phase-tasks-col">
+              <div class="phase-tasks-col-label">主要任务</div>
+              <ul class="phase-task-list" role="list">
+                <li>建立最小仓库骨架并编写 <code>AGENTS.md</code>，锁定技术栈、目录结构及本阶段范围（明确排除附件/音视频上传）。</li>
+                <li>编写 <code>docs/idea.md</code>，落地黑客松现场组队的用户故事、核心页面与开发期登录约定。</li>
+                <li>让 AI（DSH）从使用者视角评审 Idea，找出 8 个 P0 + 3 个 P1 设计缺口，再由人填写【我的回答】完成决策。</li>
+              </ul>
+            </div>
+
+            <div class="phase-outputs">
+              <div class="phase-outputs-label">关键产出</div>
+              <span class="artifact-chip">AGENTS.md</span>
+              <span class="artifact-chip">docs/idea.md</span>
+              <span class="artifact-chip">docs/draft.md</span>
+            </div>
+          </li>
+
+          <!-- Phase 02 -->
+          <li class="phase-row reveal-item" data-phase="2">
+            <div class="phase-index-col">
+              <span class="phase-big-num">02</span>
+              <span class="phase-time">10:00 – 10:12</span>
+              <span class="phase-role-pill">AI 整理收敛 · 人冻结基线</span>
+            </div>
+
+            <div class="phase-mission-col">
+              <h3>规格冻结</h3>
+              <div class="phase-mission-label">这个阶段干啥的</div>
+              <p class="phase-mission-text">
+                清除多轮讨论中的冲突与待定项，把产品需求与视觉规范固化为 AI 编程前的唯一“施工图纸”。
+              </p>
+            </div>
+
+            <div class="phase-tasks-col">
+              <div class="phase-tasks-col-label">主要任务</div>
+              <ul class="phase-task-list" role="list">
+                <li>整理人工回答与多轮讨论结论，输出无待确认项的整合版关键设计 <code>docs/draft-edited.md</code>。</li>
+                <li>同步更新 <code>AGENTS.md</code> 文档索引，声明 <code>draft-edited.md</code> 为唯一设计基线、旧 <code>draft.md</code> 不再参考。</li>
+                <li>将设计基线转为 <code>docs/prd.md</code>（页面清单、权限矩阵、12 条验收标准），并引入 <code>DESIGN.md</code> 视觉规范。</li>
+              </ul>
+            </div>
+
+            <div class="phase-outputs">
+              <div class="phase-outputs-label">关键产出</div>
+              <span class="artifact-chip">docs/draft-edited.md</span>
+              <span class="artifact-chip">docs/prd.md</span>
+              <span class="artifact-chip">DESIGN.md</span>
+            </div>
+          </li>
+
+          <!-- Phase 03 -->
+          <li class="phase-row reveal-item" data-phase="3">
+            <div class="phase-index-col">
+              <span class="phase-big-num">03</span>
+              <span class="phase-time">10:36 – 11:08</span>
+              <span class="phase-role-pill">AI 一次生成 · 人走查微调</span>
+            </div>
+
+            <div class="phase-mission-col">
+              <h3>AI 全栈实现</h3>
+              <div class="phase-mission-label">这个阶段干啥的</div>
+              <p class="phase-mission-text">
+                在上下文完整、规则冻结的前提下，让 AI 一次性构建出可运行的前后端 MVP，再通过人工体验做聚焦打磨。
+              </p>
+            </div>
+
+            <div class="phase-tasks-col">
+              <div class="phase-tasks-col-label">主要任务</div>
+              <ul class="phase-task-list" role="list">
+                <li>AI 严格对照 PRD 与 DESIGN 规范，一次交付 FastAPI + SQLite 后端与 React + Vite + TypeScript 前端代码。</li>
+                <li>跑通登录、组队广场、创建队伍、提交申请、队长审核、我的队伍等核心 MVP 闭环。</li>
+                <li>人工启动应用进行页面走查，定位导航栏重复登录入口等体验细节，让 AI 做小范围聚焦修改。</li>
+              </ul>
+            </div>
+
+            <div class="phase-outputs">
+              <div class="phase-outputs-label">关键产出</div>
+              <span class="artifact-chip">backend/ (FastAPI)</span>
+              <span class="artifact-chip">frontend/ (React)</span>
+              <span class="artifact-chip">可运行 MVP</span>
+            </div>
+          </li>
+
+          <!-- Phase 04 -->
+          <li class="phase-row reveal-item" data-phase="4">
+            <div class="phase-index-col">
+              <span class="phase-big-num">04</span>
+              <span class="phase-time">12:52 – 13:37</span>
+              <span class="phase-role-pill">系统测试 · 修复 · 回归</span>
+            </div>
+
+            <div class="phase-mission-col">
+              <h3>验证闭环</h3>
+              <div class="phase-mission-label">这个阶段干啥的</div>
+              <p class="phase-mission-text">
+                不靠“自己点两下没报错”验收，而是用结构化用例全面实测、揪出高危并发缺陷并完成修复与回归验证。
+              </p>
+            </div>
+
+            <div class="phase-tasks-col">
+              <div class="phase-tasks-col-label">主要任务</div>
+              <ul class="phase-task-list" role="list">
+                <li>依据 PRD 设计 <code>docs/test-cases.md</code>，覆盖主流程、权限安全、UI、非功能及阶段外功能反向检查。</li>
+                <li>执行 API、Playwright E2E、并发、安全与工程构建测试，暴露并定位 <strong>S2：并发重复申请</strong> 缺陷。</li>
+                <li>落地部分唯一索引 + <code>BEGIN IMMEDIATE</code> 事务串行化 + 旧库迁移，完成并发 30/30 复验与报告更新。</li>
+              </ul>
+            </div>
+
+            <div class="phase-outputs">
+              <div class="phase-outputs-label">关键产出</div>
+              <span class="artifact-chip">docs/test-cases.md</span>
+              <span class="artifact-chip">S2 并发修复补丁</span>
+              <span class="artifact-chip">30/30 并发回归</span>
+            </div>
+          </li>
+
+          <!-- Phase 05 -->
+          <li class="phase-row reveal-item" data-phase="5">
+            <div class="phase-index-col">
+              <span class="phase-big-num">05</span>
+              <span class="phase-time">13:37+</span>
+              <span class="phase-role-pill">标准验收 · 沉淀交付基线</span>
+            </div>
+
+            <div class="phase-mission-col">
+              <h3>交付与迭代</h3>
+              <div class="phase-mission-label">这个阶段干啥的</div>
+              <p class="phase-mission-text">
+                以客观退出标准结束本阶段开发，同步沉淀运行说明、测试结论与已知非阻塞问题，为后续迭代留好入口。
+              </p>
+            </div>
+
+            <div class="phase-tasks-col">
+              <div class="phase-tasks-col-label">主要任务</div>
+              <ul class="phase-task-list" role="list">
+                <li>核对退出标准（P0 100% 通过、无未关闭 S1/S2、P1 ≥ 95%），确认仅留 1 个非阻塞 S4 视觉项即可收口。</li>
+                <li>同步更新 <code>README.md</code> 与完整测试报告 <code>docs/test-report-2026-11-26.md</code>。</li>
+                <li>形成文档、代码、测试与 Git 证据一致的可持续迭代 MVP 基线。</li>
+              </ul>
+            </div>
+
+            <div class="phase-outputs">
+              <div class="phase-outputs-label">关键产出</div>
+              <span class="artifact-chip">README.md</span>
+              <span class="artifact-chip">test-report-2026-11-26.md</span>
+              <span class="artifact-chip">可继续迭代 MVP</span>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         SLIDE 03 · PROCESS FLOWCHART (LARGER, WITH SUBTLE PHASE BRACKETS & WIREFRAMES)
+         ================================================================= -->
+    <section class="slide slide--canvas" id="slide-3" data-slide-index="3">
+      <div class="slide-inner">
+        <div class="slide-rail">
+          <span class="slide-rail-left">
+            <span class="slide-num-pill">03 / 06</span>
+            <span>PROCESS MAP</span>
+          </span>
+          <span>端到端主线 · 阶段分区与修复回路</span>
+        </div>
+
+        <div class="slide-head">
+          <h2 class="slide-title">一张图看懂全流程与阶段归属</h2>
+          <p class="slide-lead">
+            左侧浅色大括号与虚线框标注五个阶段，中间实线展示主流程，右侧红色虚线表示测试未达标后的修复回归闭环。课堂讲解时可点击下方阶段按钮聚焦高亮。
+          </p>
+        </div>
+
+        <div class="flow-toolbar">
+          <div class="phase-filter-bar" role="group" aria-label="按阶段高亮流程图">
+            <button class="filter-pill" type="button" data-flow-filter="all" aria-pressed="true">全部阶段</button>
+            <button class="filter-pill" type="button" data-flow-filter="1" aria-pressed="false">
+              <span class="swatch" style="background:#eef2ff;border-color:#c7d2fe" aria-hidden="true"></span>
+              <span>01 需求定义</span>
+            </button>
+            <button class="filter-pill" type="button" data-flow-filter="2" aria-pressed="false">
+              <span class="swatch" style="background:#f5f3ff;border-color:#ddd6fe" aria-hidden="true"></span>
+              <span>02 规格冻结</span>
+            </button>
+            <button class="filter-pill" type="button" data-flow-filter="3" aria-pressed="false">
+              <span class="swatch" style="background:#ecfdf5;border-color:#a7f3d0" aria-hidden="true"></span>
+              <span>03 AI 全栈实现</span>
+            </button>
+            <button class="filter-pill" type="button" data-flow-filter="4" aria-pressed="false">
+              <span class="swatch" style="background:#fffbeb;border-color:#fde68a" aria-hidden="true"></span>
+              <span>04 验证闭环</span>
+            </button>
+            <button class="filter-pill" type="button" data-flow-filter="5" aria-pressed="false">
+              <span class="swatch" style="background:#f0fdfa;border-color:#99f6e4" aria-hidden="true"></span>
+              <span>05 交付与迭代</span>
+            </button>
+          </div>
+
+          <div class="loop-legend">
+            <span class="loop-legend-line" aria-hidden="true"></span>
+            <span>红色虚线：缺陷修复与回归回路</span>
+          </div>
+        </div>
+
+        <figure class="flow-figure">
+          <div class="flow-scroll">
+            <svg class="flow-svg" id="process-svg" viewBox="0 0 1272 1896" role="img" aria-labelledby="flow-title flow-desc" xmlns="http://www.w3.org/2000/svg">
+              <title id="flow-title">HackMate 五阶段开发过程流程图</title>
+              <desc id="flow-desc">按需求定义、规格冻结、AI 全栈实现、验证闭环、交付与迭代五个阶段分组展示的 HackMate 开发流程图，包含测试发现 S2 并发重复申请缺陷后的分析、修复与回归验证回路。</desc>
+
+              <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"></path>
+                </marker>
+                <marker id="arrow-loop" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444"></path>
+                </marker>
+                <filter id="node-shadow" x="-12%" y="-16%" width="124%" height="138%">
+                  <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#0f172a" flood-opacity="0.045"></feDropShadow>
+                </filter>
+                <style>
+                  /* Quiet, low-emphasis phase framing */
+                  .phase-frame {
+                    stroke-width: 1.3;
+                    stroke-dasharray: 6 5;
+                  }
+                  .phase-brace {
+                    fill: none;
+                    stroke-width: 1.6;
+                    stroke-linecap: round;
+                    stroke-linejoin: round;
+                  }
+                  .phase-kicker {
+                    font-family: "JetBrains Mono", ui-monospace, monospace;
+                    font-size: 11.5px;
+                    font-weight: 700;
+                    letter-spacing: 0.08em;
+                    fill: #94a3b8;
+                  }
+                  .phase-name {
+                    font-family: "General Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+                    font-size: 17.5px;
+                    font-weight: 750;
+                    fill: #475569;
+                  }
+                  .phase-span {
+                    font-family: "JetBrains Mono", ui-monospace, monospace;
+                    font-size: 12px;
+                    font-weight: 600;
+                    fill: #94a3b8;
+                  }
+
+                  /* High-clarity foreground flow nodes */
+                  .node-title {
+                    font-family: "General Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+                    font-size: 19px;
+                    font-weight: 750;
+                    fill: #0f172a;
+                  }
+                  .node-sub {
+                    font-family: "DM Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+                    font-size: 13.8px;
+                    font-weight: 500;
+                    fill: #475569;
+                  }
+                  .side-title {
+                    font-family: "General Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+                    font-size: 18px;
+                    font-weight: 750;
+                    fill: #0f172a;
+                  }
+                  .side-sub {
+                    font-family: "DM Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+                    font-size: 13px;
+                    font-weight: 500;
+                    fill: #475569;
+                  }
+                  .node-num {
+                    font-family: "JetBrains Mono", ui-monospace, monospace;
+                    font-size: 13.5px;
+                    font-weight: 800;
+                  }
+                  .decision-title {
+                    font-family: "General Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+                    font-size: 17.5px;
+                    font-weight: 750;
+                    fill: #7c2d12;
+                  }
+                  .decision-sub {
+                    font-family: "DM Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+                    font-size: 13.2px;
+                    font-weight: 600;
+                    fill: #9a3412;
+                  }
+                  .flow-line {
+                    fill: none;
+                    stroke: #64748b;
+                    stroke-width: 2.2;
+                    stroke-linecap: round;
+                    stroke-linejoin: round;
+                  }
+                  .flow-line-dashed {
+                    fill: none;
+                    stroke: #ef4444;
+                    stroke-width: 2.2;
+                    stroke-linecap: round;
+                    stroke-linejoin: round;
+                    stroke-dasharray: 8 6;
+                  }
+                  .edge-pill {
+                    fill: #ffffff;
+                    stroke: #e2e8f0;
+                    stroke-width: 1.2;
+                  }
+                  .edge-pill-loop {
+                    fill: #ffffff;
+                    stroke: #fecaca;
+                    stroke-width: 1.2;
+                  }
+                  .edge-label {
+                    font-family: "DM Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+                    font-size: 13px;
+                    font-weight: 700;
+                    fill: #334155;
+                  }
+                  .edge-label-pass {
+                    font-family: "DM Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+                    font-size: 13px;
+                    font-weight: 700;
+                    fill: #0f766e;
+                  }
+                  .edge-label-loop {
+                    font-family: "DM Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+                    font-size: 13px;
+                    font-weight: 700;
+                    fill: #b91c1c;
+                  }
+                  .cap-title {
+                    font-family: "General Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+                    font-size: 18px;
+                    font-weight: 800;
+                    fill: #f4f4f6;
+                  }
+                  .cap-sub {
+                    font-family: "JetBrains Mono", "PingFang SC", monospace;
+                    font-size: 12.5px;
+                    font-weight: 500;
+                    fill: #cbd5e1;
+                  }
+                </style>
+              </defs>
+
+              <!-- ===== START CAPSULE ===== -->
+              <g filter="url(#node-shadow)">
+                <rect x="351" y="14" width="260" height="54" rx="27" fill="#111216"></rect>
+              </g>
+              <text class="cap-title" x="481" y="38" text-anchor="middle">项目启动</text>
+              <text class="cap-sub" x="481" y="57" text-anchor="middle">2026-11-26 · 08:53</text>
+
+              <!-- ============================================================
+                   PHASE 01 · 需求定义 (Steps 1 - 4)
+                   ============================================================ -->
+              <g class="phase-group" data-phase="1">
+                <!-- Subtle wireframe enclosure -->
+                <rect class="phase-frame" x="211" y="90" width="540" height="426" rx="22" fill="#f8faff" fill-opacity="0.72" stroke="#d8dff2"></rect>
+                <!-- Quiet left curly brace & phase label -->
+                <path class="phase-brace" stroke="#c8d3eb" d="M 198 108 C 188 108, 186 116, 186 126 L 186 289 C 186 298, 180 302, 172 303 C 180 304, 186 308, 186 317 L 186 480 C 186 490, 188 498, 198 498"></path>
+                <text class="phase-kicker" x="158" y="281" text-anchor="end">PHASE 01</text>
+                <text class="phase-name" x="158" y="307" text-anchor="end">需求定义</text>
+                <text class="phase-span" x="158" y="328" text-anchor="end">08:53–09:47</text>
+
+                <!-- Internal arrows -->
+                <path class="flow-line" d="M 481 186 V 208" marker-end="url(#arrow)"></path>
+                <path class="flow-line" d="M 481 290 V 312" marker-end="url(#arrow)"></path>
+                <path class="flow-line" d="M 481 394 V 416" marker-end="url(#arrow)"></path>
+
+                <!-- Cards 1..4 -->
+                <g filter="url(#node-shadow)">
+                  <rect x="236" y="108" width="490" height="78" rx="14" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1.3"></rect>
+                  <rect x="236" y="212" width="490" height="78" rx="14" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1.3"></rect>
+                  <rect x="236" y="316" width="490" height="78" rx="14" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1.3"></rect>
+                  <rect x="236" y="420" width="490" height="78" rx="14" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1.3"></rect>
+                </g>
+
+                <g>
+                  <circle cx="274" cy="147" r="17" fill="#ffffff" stroke="#c7d2fe" stroke-width="1.3"></circle>
+                  <text class="node-num" x="274" y="152" text-anchor="middle" fill="#4338ca">1</text>
+                  <text class="node-title" x="306" y="141">初始化项目</text>
+                  <text class="node-sub" x="306" y="164">建立仓库 · README · AGENTS.md</text>
+
+                  <circle cx="274" cy="251" r="17" fill="#ffffff" stroke="#c7d2fe" stroke-width="1.3"></circle>
+                  <text class="node-num" x="274" y="256" text-anchor="middle" fill="#4338ca">2</text>
+                  <text class="node-title" x="306" y="245">形成初始需求</text>
+                  <text class="node-sub" x="306" y="268">docs/idea.md：用户故事与功能清单</text>
+
+                  <circle cx="274" cy="355" r="17" fill="#ffffff" stroke="#c7d2fe" stroke-width="1.3"></circle>
+                  <text class="node-num" x="274" y="360" text-anchor="middle" fill="#4338ca">3</text>
+                  <text class="node-title" x="306" y="349">AI 需求评审（DSH）</text>
+                  <text class="node-sub" x="306" y="372">从使用者视角找出 8 个 P0 + 3 个 P1 设计缺口</text>
+
+                  <circle cx="274" cy="459" r="17" fill="#ffffff" stroke="#c7d2fe" stroke-width="1.3"></circle>
+                  <text class="node-num" x="274" y="464" text-anchor="middle" fill="#4338ca">4</text>
+                  <text class="node-title" x="306" y="453">人工澄清与产品决策</text>
+                  <text class="node-sub" x="306" y="476">填写【我的回答】，确认权限、状态、范围与不做项</text>
+                </g>
+              </g>
+
+              <!-- ============================================================
+                   PHASE 02 · 规格冻结 (Steps 5 - 6)
+                   ============================================================ -->
+              <g class="phase-group" data-phase="2">
+                <rect class="phase-frame" x="211" y="538" width="540" height="218" rx="22" fill="#faf8ff" fill-opacity="0.72" stroke="#e2daf5"></rect>
+                <path class="phase-brace" stroke="#d3c8eb" d="M 198 556 C 188 556, 186 564, 186 574 L 186 633 C 186 642, 180 646, 172 647 C 180 648, 186 652, 186 661 L 186 720 C 186 730, 188 738, 198 738"></path>
+                <text class="phase-kicker" x="158" y="625" text-anchor="end">PHASE 02</text>
+                <text class="phase-name" x="158" y="651" text-anchor="end">规格冻结</text>
+                <text class="phase-span" x="158" y="672" text-anchor="end">10:00–10:12</text>
+
+                <path class="flow-line" d="M 481 634 V 656" marker-end="url(#arrow)"></path>
+
+                <g filter="url(#node-shadow)">
+                  <rect x="236" y="556" width="490" height="78" rx="14" fill="#f5f3ff" stroke="#ddd6fe" stroke-width="1.3"></rect>
+                  <rect x="236" y="660" width="490" height="78" rx="14" fill="#f5f3ff" stroke="#ddd6fe" stroke-width="1.3"></rect>
+                </g>
+
+                <g>
+                  <circle cx="274" cy="595" r="17" fill="#ffffff" stroke="#ddd6fe" stroke-width="1.3"></circle>
+                  <text class="node-num" x="274" y="600" text-anchor="middle" fill="#6d28d9">5</text>
+                  <text class="node-title" x="306" y="589">收敛设计基线</text>
+                  <text class="node-sub" x="306" y="612">docs/draft-edited.md，同步更新 AGENTS.md</text>
+
+                  <circle cx="274" cy="699" r="17" fill="#ffffff" stroke="#ddd6fe" stroke-width="1.3"></circle>
+                  <text class="node-num" x="274" y="704" text-anchor="middle" fill="#6d28d9">6</text>
+                  <text class="node-title" x="306" y="693">规格化</text>
+                  <text class="node-sub" x="306" y="716">docs/prd.md + DESIGN.md：需求与视觉规范</text>
+                </g>
+              </g>
+
+              <!-- ============================================================
+                   PHASE 03 · AI 全栈实现 (Steps 7 - 8)
+                   ============================================================ -->
+              <g class="phase-group" data-phase="3">
+                <rect class="phase-frame" x="211" y="778" width="540" height="218" rx="22" fill="#f6fdf9" fill-opacity="0.75" stroke="#cdeae0"></rect>
+                <path class="phase-brace" stroke="#b9ddd0" d="M 198 796 C 188 796, 186 804, 186 814 L 186 873 C 186 882, 180 886, 172 887 C 180 888, 186 892, 186 901 L 186 960 C 186 970, 188 978, 198 978"></path>
+                <text class="phase-kicker" x="158" y="865" text-anchor="end">PHASE 03</text>
+                <text class="phase-name" x="158" y="891" text-anchor="end">AI 全栈实现</text>
+                <text class="phase-span" x="158" y="912" text-anchor="end">10:36–11:08</text>
+
+                <path class="flow-line" d="M 481 874 V 896" marker-end="url(#arrow)"></path>
+
+                <g filter="url(#node-shadow)">
+                  <rect x="236" y="796" width="490" height="78" rx="14" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="1.3"></rect>
+                  <rect x="236" y="900" width="490" height="78" rx="14" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="1.3"></rect>
+                </g>
+
+                <g>
+                  <circle cx="274" cy="835" r="17" fill="#ffffff" stroke="#a7f3d0" stroke-width="1.3"></circle>
+                  <text class="node-num" x="274" y="840" text-anchor="middle" fill="#047857">7</text>
+                  <text class="node-title" x="306" y="829">AI 全栈实现</text>
+                  <text class="node-sub" x="306" y="852">FastAPI + SQLite + uv；React + Vite + TypeScript</text>
+
+                  <circle cx="274" cy="939" r="17" fill="#ffffff" stroke="#a7f3d0" stroke-width="1.3"></circle>
+                  <text class="node-num" x="274" y="944" text-anchor="middle" fill="#047857">8</text>
+                  <text class="node-title" x="306" y="933">页面走查与聚焦修改</text>
+                  <text class="node-sub" x="306" y="956">导航、登录入口等交互细节优化</text>
+                </g>
+              </g>
+
+              <!-- ============================================================
+                   PHASE 04 · 验证闭环 (Steps 9 - 12 + Decisions K, N + Repair Loop)
+                   ============================================================ -->
+              <g class="phase-group" data-phase="4">
+                <!-- Expanded subtle wireframe embracing test + repair loop -->
+                <rect class="phase-frame" x="211" y="1018" width="1044" height="620" rx="22" fill="#fffcf5" fill-opacity="0.78" stroke="#f0ddbd"></rect>
+                <path class="phase-brace" stroke="#e4cda6" d="M 198 1036 C 188 1036, 186 1044, 186 1054 L 186 1314 C 186 1323, 180 1327, 172 1328 C 180 1329, 186 1333, 186 1342 L 186 1602 C 186 1612, 188 1620, 198 1620"></path>
+                <text class="phase-kicker" x="158" y="1306" text-anchor="end">PHASE 04</text>
+                <text class="phase-name" x="158" y="1332" text-anchor="end">验证闭环</text>
+                <text class="phase-span" x="158" y="1353" text-anchor="end">12:52–13:37</text>
+
+                <!-- Internal arrows -->
+                <path class="flow-line" d="M 481 1114 V 1136" marker-end="url(#arrow)"></path>
+                <path class="flow-line" d="M 481 1218 V 1244" marker-end="url(#arrow)"></path>
+
+                <!-- K (yes) -> 11 -->
+                <path class="flow-line" d="M 706 1306 H 784" marker-end="url(#arrow)"></path>
+                <!-- K (no) -> 12 -->
+                <path class="flow-line" d="M 481 1364 V 1426 H 784" marker-end="url(#arrow)"></path>
+                <!-- 11 -> 12 -->
+                <path class="flow-line" d="M 972 1345 V 1383" marker-end="url(#arrow)"></path>
+                <!-- 12 -> N -->
+                <path class="flow-line" d="M 972 1465 V 1498" marker-end="url(#arrow)"></path>
+                <!-- N (no) red dashed repair loop -> 11 -->
+                <path class="flow-line-dashed" d="M 1138 1558 H 1200 V 1306 H 1160" marker-end="url(#arrow-loop)"></path>
+
+                <!-- Edge labels -->
+                <rect class="edge-pill" x="728" y="1293" width="36" height="26" rx="13"></rect>
+                <text class="edge-label" x="746" y="1311" text-anchor="middle">是</text>
+
+                <rect class="edge-pill" x="546" y="1412" width="146" height="28" rx="14"></rect>
+                <text class="edge-label" x="619" y="1431" text-anchor="middle">否（仅剩 S4）</text>
+
+                <rect class="edge-pill-loop" x="1160" y="1416" width="80" height="28" rx="14"></rect>
+                <text class="edge-label-loop" x="1200" y="1435" text-anchor="middle">否 · 回修</text>
+
+                <!-- Cards 9, 10 -->
+                <g filter="url(#node-shadow)">
+                  <rect x="236" y="1036" width="490" height="78" rx="14" fill="#fffbeb" stroke="#fde68a" stroke-width="1.3"></rect>
+                  <rect x="236" y="1140" width="490" height="78" rx="14" fill="#fffbeb" stroke="#fde68a" stroke-width="1.3"></rect>
+                </g>
+
+                <g>
+                  <circle cx="274" cy="1075" r="17" fill="#ffffff" stroke="#fde68a" stroke-width="1.3"></circle>
+                  <text class="node-num" x="274" y="1080" text-anchor="middle" fill="#b45309">9</text>
+                  <text class="node-title" x="306" y="1069">测试设计</text>
+                  <text class="node-sub" x="306" y="1092">docs/test-cases.md：152 条用例、权限与退出标准</text>
+
+                  <circle cx="274" cy="1179" r="17" fill="#ffffff" stroke="#fde68a" stroke-width="1.3"></circle>
+                  <text class="node-num" x="274" y="1184" text-anchor="middle" fill="#b45309">10</text>
+                  <text class="node-title" x="306" y="1173">测试执行</text>
+                  <text class="node-sub" x="306" y="1196">API · Playwright E2E · 并发 · 安全 · UI/NFR</text>
+                </g>
+
+                <!-- Decision K -->
+                <g filter="url(#node-shadow)">
+                  <polygon points="481,1248 706,1306 481,1364 256,1306" fill="#fff7ed" stroke="#f59e0b" stroke-width="1.6"></polygon>
+                </g>
+                <text class="decision-title" x="481" y="1300" text-anchor="middle">发现需要修复的缺陷？</text>
+                <text class="decision-sub" x="481" y="1323" text-anchor="middle">S2：并发重复申请</text>
+
+                <!-- Repair branch cards 11, 12 -->
+                <g filter="url(#node-shadow)">
+                  <rect x="788" y="1267" width="368" height="78" rx="14" fill="#fef2f2" stroke="#fecaca" stroke-width="1.3"></rect>
+                  <rect x="788" y="1387" width="368" height="78" rx="14" fill="#fef2f2" stroke="#fecaca" stroke-width="1.3"></rect>
+                </g>
+
+                <g>
+                  <circle cx="822" cy="1306" r="16.5" fill="#ffffff" stroke="#fecaca" stroke-width="1.3"></circle>
+                  <text class="node-num" x="822" y="1311" text-anchor="middle" fill="#b91c1c">11</text>
+                  <text class="side-title" x="850" y="1300">缺陷分析与修复</text>
+                  <text class="side-sub" x="850" y="1323">唯一索引 · BEGIN IMMEDIATE · 旧库迁移</text>
+
+                  <circle cx="822" cy="1426" r="16.5" fill="#ffffff" stroke="#fecaca" stroke-width="1.3"></circle>
+                  <text class="node-num" x="822" y="1431" text-anchor="middle" fill="#b91c1c">12</text>
+                  <text class="side-title" x="850" y="1420">修复复验与回归</text>
+                  <text class="side-sub" x="850" y="1443">并发 30/30 通过 · 更新测试报告</text>
+                </g>
+
+                <!-- Decision N -->
+                <g filter="url(#node-shadow)">
+                  <polygon points="972,1502 1138,1558 972,1614 806,1558" fill="#fff7ed" stroke="#f59e0b" stroke-width="1.6"></polygon>
+                </g>
+                <text class="decision-title" x="972" y="1552" text-anchor="middle">达到退出标准？</text>
+                <text class="decision-sub" x="972" y="1575" text-anchor="middle">P0 100% · 无 S1/S2</text>
+              </g>
+
+              <!-- ============================================================
+                   PHASE 05 · 交付与迭代 (Step 13 + Done Capsule)
+                   ============================================================ -->
+              <g class="phase-group" data-phase="5">
+                <rect class="phase-frame" x="211" y="1662" width="540" height="214" rx="22" fill="#f5fdfa" fill-opacity="0.78" stroke="#c8ece4"></rect>
+                <path class="phase-brace" stroke="#b3ded5" d="M 198 1680 C 188 1680, 186 1688, 186 1698 L 186 1755 C 186 1764, 180 1768, 172 1769 C 180 1770, 186 1774, 186 1783 L 186 1840 C 186 1850, 188 1858, 198 1858"></path>
+                <text class="phase-kicker" x="158" y="1747" text-anchor="end">PHASE 05</text>
+                <text class="phase-name" x="158" y="1773" text-anchor="end">交付与迭代</text>
+                <text class="phase-span" x="158" y="1794" text-anchor="end">13:37+</text>
+
+                <path class="flow-line" d="M 481 1758 V 1794" marker-end="url(#arrow)"></path>
+
+                <g filter="url(#node-shadow)">
+                  <rect x="236" y="1680" width="490" height="78" rx="14" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.3"></rect>
+                </g>
+
+                <g>
+                  <circle cx="274" cy="1719" r="17" fill="#ffffff" stroke="#99f6e4" stroke-width="1.3"></circle>
+                  <text class="node-num" x="274" y="1724" text-anchor="middle" fill="#0f766e">13</text>
+                  <text class="node-title" x="306" y="1713">文档与交付收口</text>
+                  <text class="node-sub" x="306" y="1736">README · 测试报告 · 最终提交 · 后续迭代入口</text>
+                </g>
+
+                <!-- Done capsule -->
+                <g filter="url(#node-shadow)">
+                  <rect x="311" y="1798" width="340" height="60" rx="30" fill="#111216"></rect>
+                </g>
+                <text class="cap-title" x="481" y="1823" text-anchor="middle">MVP 交付，可继续迭代</text>
+                <text class="cap-sub" x="481" y="1844" text-anchor="middle">151 / 152 通过 · 仅留 1 个 S4</text>
+              </g>
+
+              <!-- ===== INTER-PHASE CONNECTORS (rendered above phase wireframes for crisp arrows) ===== -->
+              <g class="inter-phase-arrow">
+                <path class="flow-line" d="M 481 68 V 104" marker-end="url(#arrow)"></path>
+                <path class="flow-line" d="M 481 498 V 552" marker-end="url(#arrow)"></path>
+                <path class="flow-line" d="M 481 738 V 792" marker-end="url(#arrow)"></path>
+                <path class="flow-line" d="M 481 978 V 1032" marker-end="url(#arrow)"></path>
+                <!-- Decision N (yes) down and left into Phase 5 Step 13 -->
+                <path class="flow-line" d="M 972 1614 V 1719 H 730" marker-end="url(#arrow)"></path>
+                <rect class="edge-pill" x="802" y="1705" width="112" height="28" rx="14"></rect>
+                <text class="edge-label-pass" x="858" y="1724" text-anchor="middle">是 · 达标交付</text>
+              </g>
+            </svg>
+          </div>
+
+          <figcaption class="flow-caption">
+            <span><strong>读图方式：</strong>自上而下按主线推进，进入阶段 04 验证闭环后若发现阻塞缺陷则走右侧修复回归环，达到退出标准后再进入阶段 05 收口交付。</span>
+            <span class="flow-s4-note">提示：最终仅保留 1 个非阻塞 S4 视觉项，P0 全部通过，满足退出标准。</span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         SLIDE 04 · GIT TIMELINE (PHASE-GROUPED LECTURE TRACK)
+         ================================================================= -->
+    <section class="slide slide--studio" id="slide-4" data-slide-index="4">
+      <div class="slide-inner">
+        <div class="slide-rail">
+          <span class="slide-rail-left">
+            <span class="slide-num-pill">04 / 06</span>
+            <span>GIT EVIDENCE</span>
+          </span>
+          <span>真实时间线 · 按阶段展开的过程证据</span>
+        </div>
+
+        <div class="slide-head">
+          <h2 class="slide-title">Git 提交轨迹：真实演进证据</h2>
+          <p class="slide-lead">
+            把提交记录按开发阶段分组展开，课堂上可以清晰看到项目节奏——前半程集中澄清和冻结规格，后半程一次成型并完成测试修复闭环。
+          </p>
+        </div>
+
+        <div class="git-filter-bar" role="group" aria-label="按阶段筛选提交记录">
+          <button class="filter-pill" type="button" data-git-filter="all" aria-pressed="true">显示全部阶段</button>
+          <button class="filter-pill" type="button" data-git-filter="1" aria-pressed="false">01 需求定义</button>
+          <button class="filter-pill" type="button" data-git-filter="2" aria-pressed="false">02 规格冻结</button>
+          <button class="filter-pill" type="button" data-git-filter="3" aria-pressed="false">03 AI 全栈实现</button>
+          <button class="filter-pill" type="button" data-git-filter="4" aria-pressed="false">04 验证与修复闭环</button>
+        </div>
+
+        <div class="git-chapters">
+          <!-- Chapter 1 -->
+          <div class="git-chapter" data-phase="1">
+            <aside class="git-chapter-aside">
+              <div class="git-chapter-kicker">PHASE 01</div>
+              <h3>需求定义</h3>
+              <div class="git-chapter-time">08:53 – 09:47</div>
+              <p class="git-chapter-summary">先写清初始想法与约束边界，再让 AI 评审挑刺，最后由人逐项拍板关键业务规则。</p>
+            </aside>
+
+            <ol class="commit-spine" role="list">
+              <li class="commit-item reveal-item">
+                <div class="commit-head">
+                  <time class="commit-time">08:53</time>
+                  <span class="commit-tag">立项</span>
+                  <code class="commit-hash">6f33628</code>
+                </div>
+                <h4>初始化项目</h4>
+                <p>建立最小仓库骨架，保留 README 和空的 AGENTS.md，为后续文档驱动开发预留位置。</p>
               </li>
-              <li class="rail-item">
-                <span class="rail-dot" aria-hidden="true"></span>
-                <span>
-                  <span class="rail-title">规格冻结</span>
-                  <span class="rail-sub">设计基线、PRD、视觉规范</span>
-                </span>
-                <span class="rail-time">10:00–10:12</span>
+
+              <li class="commit-item reveal-item">
+                <div class="commit-head">
+                  <time class="commit-time">09:09</time>
+                  <span class="commit-tag">需求</span>
+                  <code class="commit-hash">5929ec8</code>
+                </div>
+                <h4>添加 idea 草稿文件</h4>
+                <p>把组队产品创意、核心场景和开发期验证码要求写成可执行的初始需求。</p>
               </li>
-              <li class="rail-item">
-                <span class="rail-dot" aria-hidden="true"></span>
-                <span>
-                  <span class="rail-title">AI 全栈实现</span>
-                  <span class="rail-sub">前后端 MVP、页面走查微调</span>
-                </span>
-                <span class="rail-time">10:36–11:08</span>
+
+              <li class="commit-item reveal-item">
+                <div class="commit-head">
+                  <time class="commit-time">09:18</time>
+                  <span class="commit-tag">约束</span>
+                  <code class="commit-hash">12699ea</code>
+                </div>
+                <h4>编写 AGENTS.md</h4>
+                <p>明确技术栈、前后端目录和本阶段范围，并排除 PDF、图片、视频上传功能。</p>
               </li>
-              <li class="rail-item">
-                <span class="rail-dot" aria-hidden="true"></span>
-                <span>
-                  <span class="rail-title">验证闭环</span>
-                  <span class="rail-sub">测试设计、执行、修复、回归</span>
-                </span>
-                <span class="rail-time">12:52–13:37</span>
+
+              <li class="commit-item commit-item--pivot reveal-item">
+                <div class="commit-head">
+                  <time class="commit-time">09:26</time>
+                  <span class="commit-tag">AI 评审</span>
+                  <span class="commit-pivot-badge">关键转折</span>
+                  <code class="commit-hash">18d0852</code>
+                </div>
+                <h4>DSH 从使用者视角评审 Idea</h4>
+                <p>发现用户画像、名额规则、审核流程、联系方式、生命周期等 11 组设计缺口，形成 P0 / P1 问题清单。</p>
               </li>
-              <li class="rail-item">
-                <span class="rail-dot" aria-hidden="true"></span>
-                <span>
-                  <span class="rail-title">交付与迭代</span>
-                  <span class="rail-sub">README、测试报告、后续优化</span>
-                </span>
-                <span class="rail-time">13:37+</span>
+
+              <li class="commit-item commit-item--pivot reveal-item">
+                <div class="commit-head">
+                  <time class="commit-time">09:47</time>
+                  <span class="commit-tag">人工决策</span>
+                  <span class="commit-pivot-badge">人工拍板</span>
+                  <code class="commit-hash">394f915</code>
+                </div>
+                <h4>人工编辑 draft 文档</h4>
+                <p>逐项填写【我的回答】，冻结昵称、权限、名额、审核、联系方式等关键业务规则。</p>
               </li>
             </ol>
-          </aside>
-        </div>
+          </div>
 
-        <div class="stats" aria-label="项目关键数据">
-          <div class="stat-card">
-            <div class="stat-value">14<small> commits</small></div>
-            <div class="stat-label">Git 提交记录</div>
+          <!-- Chapter 2 -->
+          <div class="git-chapter" data-phase="2">
+            <aside class="git-chapter-aside">
+              <div class="git-chapter-kicker">PHASE 02</div>
+              <h3>规格冻结</h3>
+              <div class="git-chapter-time">10:00 – 10:12</div>
+              <p class="git-chapter-summary">把分散的问答收口为单一设计基线、完整 PRD 与视觉规范，并显式更新 AI 上下文索引。</p>
+            </aside>
+
+            <ol class="commit-spine" role="list">
+              <li class="commit-item reveal-item">
+                <div class="commit-head">
+                  <time class="commit-time">10:00</time>
+                  <span class="commit-tag">设计基线</span>
+                  <code class="commit-hash">dfd26f8</code>
+                </div>
+                <h4>多轮讨论生成 draft-edited</h4>
+                <p>删除待确认项和冲突建议，把人工回答整理成可执行的整合版关键设计。</p>
+              </li>
+
+              <li class="commit-item reveal-item">
+                <div class="commit-head">
+                  <time class="commit-time">10:01</time>
+                  <span class="commit-tag">上下文</span>
+                  <code class="commit-hash">b9aad74</code>
+                </div>
+                <h4>更新 AGENTS.md 文档索引</h4>
+                <p>将 <code>draft-edited.md</code> 指定为唯一设计基线，明确旧 draft 不再作为实现依据。</p>
+              </li>
+
+              <li class="commit-item commit-item--pivot reveal-item">
+                <div class="commit-head">
+                  <time class="commit-time">10:06</time>
+                  <span class="commit-tag">PRD</span>
+                  <span class="commit-pivot-badge">规格冻结</span>
+                  <code class="commit-hash">b439f86</code>
+                </div>
+                <h4>使用 DSH 生成 PRD</h4>
+                <p>把设计基线转成产品需求文档，明确功能范围、页面清单、权限矩阵和 12 条验收标准。</p>
+              </li>
+
+              <li class="commit-item reveal-item">
+                <div class="commit-head">
+                  <time class="commit-time">10:12</time>
+                  <span class="commit-tag">视觉规范</span>
+                  <code class="commit-hash">049dd6e</code>
+                </div>
+                <h4>添加 DESIGN.md</h4>
+                <p>补充颜色、字体、组件、间距与交互规范，把产品视觉语言也纳入 AI 上下文。</p>
+              </li>
+            </ol>
           </div>
-          <div class="stat-card">
-            <div class="stat-value">13<small> steps</small></div>
-            <div class="stat-label">流程图关键节点</div>
+
+          <!-- Chapter 3 -->
+          <div class="git-chapter" data-phase="3">
+            <aside class="git-chapter-aside">
+              <div class="git-chapter-kicker">PHASE 03</div>
+              <h3>AI 全栈实现</h3>
+              <div class="git-chapter-time">10:36 – 11:08</div>
+              <p class="git-chapter-summary">前期规格清晰后，AI 一次写出完整 MVP；随后人工实机体验，聚焦修整交互细节。</p>
+            </aside>
+
+            <ol class="commit-spine" role="list">
+              <li class="commit-item commit-item--pivot reveal-item">
+                <div class="commit-head">
+                  <time class="commit-time">10:36</time>
+                  <span class="commit-tag">全栈实现</span>
+                  <span class="commit-pivot-badge">一次成型</span>
+                  <code class="commit-hash">1c8f43c</code>
+                </div>
+                <h4>DSH 实现前后端程序</h4>
+                <p>一次提交 49 个文件，完成登录、广场、创建队伍、申请、审核、我的队伍等完整 MVP 闭环。</p>
+              </li>
+
+              <li class="commit-item reveal-item">
+                <div class="commit-head">
+                  <time class="commit-time">11:08</time>
+                  <span class="commit-tag">走查微调</span>
+                  <code class="commit-hash">e2c95a6</code>
+                </div>
+                <h4>使用 DSH 进行页面修改</h4>
+                <p>页面走查后精简导航中的重复登录入口，体现“生成后仍需人工微调”的真实开发过程。</p>
+              </li>
+            </ol>
           </div>
-          <div class="stat-card">
-            <div class="stat-value">152<small> cases</small></div>
-            <div class="stat-label">测试用例总数</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">99.3<small> %</small></div>
-            <div class="stat-label">测试通过率 · 151 / 152</div>
+
+          <!-- Chapter 4 -->
+          <div class="git-chapter" data-phase="4">
+            <aside class="git-chapter-aside">
+              <div class="git-chapter-kicker">PHASE 04</div>
+              <h3>验证与修复闭环</h3>
+              <div class="git-chapter-time">12:52 – 13:37</div>
+              <p class="git-chapter-summary">先写测试基线，再全链路执行找真 Bug，最后从数据库层彻底修复并完成回归验证。</p>
+            </aside>
+
+            <ol class="commit-spine" role="list">
+              <li class="commit-item reveal-item">
+                <div class="commit-head">
+                  <time class="commit-time">12:52</time>
+                  <span class="commit-tag">测试设计</span>
+                  <code class="commit-hash">570a302</code>
+                </div>
+                <h4>添加测试用例</h4>
+                <p>设计 152 条测试用例，覆盖主流程、权限与安全、界面、非功能和阶段外功能反向检查。</p>
+              </li>
+
+              <li class="commit-item reveal-item">
+                <div class="commit-head">
+                  <time class="commit-time">13:23</time>
+                  <span class="commit-tag">测试执行</span>
+                  <code class="commit-hash">7972f64</code>
+                </div>
+                <h4>执行测试并输出测试报告</h4>
+                <p>通过 API、Playwright E2E、并发、安全、UI 和工程构建检查，输出 151 / 152 通过的测试报告并定位 S2 并发缺陷。</p>
+              </li>
+
+              <li class="commit-item commit-item--fix reveal-item">
+                <div class="commit-head">
+                  <time class="commit-time">13:37</time>
+                  <span class="commit-tag">修复回归</span>
+                  <span class="commit-pivot-badge">闭环达标</span>
+                  <code class="commit-hash">d4d7577</code>
+                </div>
+                <h4>修复 S2：并发重复申请</h4>
+                <p>增加部分唯一索引、<code>BEGIN IMMEDIATE</code> 事务串行化与旧库迁移，并完成 30/30 并发复验和报告更新。</p>
+              </li>
+            </ol>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="section" id="flow">
-      <div class="wrap">
-        <div class="section-head">
-          <div>
-            <div class="section-kicker">01 · Process map</div>
-            <h2>一张图看懂开发主线</h2>
-            <p class="section-copy">
-              实线表示主流程，虚线表示验证未达标后的修复回路。
-              编号与下方的 Git 时间线一一对应，方便在教学中从“做了什么”追溯到“为什么这样做”。
-            </p>
-          </div>
+    <!-- =================================================================
+         SLIDE 05 · HUMAN IN THE LOOP DECISIONS
+         ================================================================= -->
+    <section class="slide slide--mist" id="slide-5" data-slide-index="5">
+      <div class="slide-inner">
+        <div class="slide-rail">
+          <span class="slide-rail-left">
+            <span class="slide-num-pill">05 / 06</span>
+            <span>HUMAN IN THE LOOP</span>
+          </span>
+          <span>关键业务决策 · 为什么必须由人拍板</span>
         </div>
 
-        <div class="legend" aria-label="流程图图例">
-          <span class="legend-item"><span class="legend-swatch" style="background:#eef2ff;border-color:#c7d2fe"></span>需求定义</span>
-          <span class="legend-item"><span class="legend-swatch" style="background:#f5f3ff;border-color:#ddd6fe"></span>规格与设计</span>
-          <span class="legend-item"><span class="legend-swatch" style="background:#ecfdf5;border-color:#a7f3d0"></span>AI 实现</span>
-          <span class="legend-item"><span class="legend-swatch" style="background:#fff7ed;border-color:#fed7aa"></span>测试与缺陷闭环</span>
-          <span class="legend-item"><span class="legend-swatch" style="background:#f0fdfa;border-color:#99f6e4"></span>交付</span>
-          <span class="legend-item"><span class="legend-line"></span>修复回路</span>
+        <div class="slide-head">
+          <h2 class="slide-title">对话真正产生了哪些关键决策</h2>
+          <p class="slide-lead">
+            AI 的高价值不只是“写代码”，更在于把模糊想法逼成一组必须回答的产品问题。下面六项决策构成了后续 PRD、实现与测试的共同基线。
+          </p>
         </div>
 
-        <div class="chart-shell">
-          <svg viewBox="0 0 1460 1360" role="img" aria-labelledby="flow-title flow-desc" xmlns="http://www.w3.org/2000/svg">
-            <title id="flow-title">HackMate 开发过程流程图</title>
-            <desc id="flow-desc">从项目启动、需求定义、AI 评审、人工决策、设计基线、规格化、全栈实现、页面修改、测试设计、测试执行、缺陷修复、回归验证到最终交付的流程图。</desc>
-            <defs>
-              <marker id="arrow" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#8b93a7"></path>
-              </marker>
-              <marker id="arrow-loop" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444"></path>
-              </marker>
-              <filter id="soft-shadow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="4" stdDeviation="7" flood-color="#111827" flood-opacity="0.035"></feDropShadow>
-              </filter>
-              <style>
-                .node-title { font-family: var(--font, sans-serif); font-size: 15px; font-weight: 750; fill: #1f2937; }
-                .node-sub { font-family: var(--font, sans-serif); font-size: 11px; font-weight: 500; fill: #64748b; }
-                .node-num { font-family: var(--mono, monospace); font-size: 11px; font-weight: 800; fill: #4338ca; }
-                .side-title { font-family: var(--font, sans-serif); font-size: 14px; font-weight: 750; fill: #1f2937; }
-                .side-sub { font-family: var(--font, sans-serif); font-size: 10.5px; font-weight: 500; fill: #64748b; }
-                .decision-title { font-family: var(--font, sans-serif); font-size: 15px; font-weight: 750; fill: #7c2d12; }
-                .decision-sub { font-family: var(--font, sans-serif); font-size: 10.5px; font-weight: 550; fill: #9a3412; }
-                .flow-line { fill: none; stroke: #8b93a7; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-                .flow-line-dashed { fill: none; stroke: #ef4444; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 7 6; }
-                .edge-label { font-family: var(--font, sans-serif); font-size: 11px; font-weight: 700; fill: #475569; }
-                .edge-label-loop { font-family: var(--font, sans-serif); font-size: 11px; font-weight: 700; fill: #b91c1c; }
-                .label-bg { fill: #ffffff; stroke: #f1f5f9; stroke-width: 1; }
-                .start-title { font-family: var(--font, sans-serif); font-size: 15px; font-weight: 800; fill: #ffffff; }
-                .start-sub { font-family: var(--font, sans-serif); font-size: 10.5px; font-weight: 500; fill: #cbd5e1; }
-              </style>
-            </defs>
-
-            <!-- ===== main flow arrows ===== -->
-            <path class="flow-line" d="M 450 68 V 88" marker-end="url(#arrow)"></path>
-            <path class="flow-line" d="M 450 152 V 170" marker-end="url(#arrow)"></path>
-            <path class="flow-line" d="M 450 234 V 252" marker-end="url(#arrow)"></path>
-            <path class="flow-line" d="M 450 316 V 334" marker-end="url(#arrow)"></path>
-            <path class="flow-line" d="M 450 398 V 416" marker-end="url(#arrow)"></path>
-            <path class="flow-line" d="M 450 480 V 498" marker-end="url(#arrow)"></path>
-            <path class="flow-line" d="M 450 562 V 580" marker-end="url(#arrow)"></path>
-            <path class="flow-line" d="M 450 644 V 662" marker-end="url(#arrow)"></path>
-            <path class="flow-line" d="M 450 726 V 744" marker-end="url(#arrow)"></path>
-            <path class="flow-line" d="M 450 808 V 826" marker-end="url(#arrow)"></path>
-            <path class="flow-line" d="M 450 890 V 905" marker-end="url(#arrow)"></path>
-
-            <!-- K yes: K right -> L left -->
-            <path class="flow-line" d="M 690 950 H 880" marker-end="url(#arrow)"></path>
-            <!-- K no: K bottom -> turn right -> M left -->
-            <path class="flow-line" d="M 450 995 V 1034 H 880" marker-end="url(#arrow)"></path>
-            <!-- L -> M -->
-            <path class="flow-line" d="M 1070 982 V 1000" marker-end="url(#arrow)"></path>
-            <!-- M -> N -->
-            <path class="flow-line" d="M 1070 1064 V 1085" marker-end="url(#arrow)"></path>
-            <!-- N yes: down, then left into O -->
-            <path class="flow-line" d="M 1070 1165 V 1232 H 730" marker-end="url(#arrow)"></path>
-            <!-- O -> Done -->
-            <path class="flow-line" d="M 450 1264 V 1290" marker-end="url(#arrow)"></path>
-            <!-- N no: right, up, left into L -->
-            <path class="flow-line-dashed" d="M 1220 1125 H 1360 V 950 H 1260" marker-end="url(#arrow-loop)"></path>
-
-            <!-- ===== edge labels ===== -->
-            <rect class="label-bg" x="742" y="938" width="30" height="22" rx="11"></rect>
-            <text class="edge-label" x="757" y="953" text-anchor="middle">是</text>
-
-            <rect class="label-bg" x="500" y="1019" width="125" height="22" rx="11"></rect>
-            <text class="edge-label" x="562" y="1034" text-anchor="middle">否（仅剩 S4）</text>
-
-            <rect class="label-bg" x="994" y="1208" width="30" height="22" rx="11"></rect>
-            <text class="edge-label" x="1009" y="1223" text-anchor="middle">是</text>
-
-            <text class="edge-label-loop" x="1286" y="1063" text-anchor="middle">否 · 回修</text>
-
-            <!-- ===== start ===== -->
-            <g filter="url(#soft-shadow)">
-              <rect x="350" y="22" width="200" height="46" rx="23" fill="#111827"></rect>
-            </g>
-            <text class="start-title" x="450" y="43" text-anchor="middle">项目启动</text>
-            <text class="start-sub" x="450" y="58" text-anchor="middle">2026-11-26 · 08:53</text>
-
-            <!-- ===== main cards ===== -->
-            <g filter="url(#soft-shadow)">
-              <rect x="170" y="88" width="560" height="64" rx="14" fill="#eef2ff" stroke="#c7d2fe"></rect>
-              <rect x="170" y="170" width="560" height="64" rx="14" fill="#eef2ff" stroke="#c7d2fe"></rect>
-              <rect x="170" y="252" width="560" height="64" rx="14" fill="#eef2ff" stroke="#c7d2fe"></rect>
-              <rect x="170" y="334" width="560" height="64" rx="14" fill="#eef2ff" stroke="#c7d2fe"></rect>
-              <rect x="170" y="416" width="560" height="64" rx="14" fill="#eef2ff" stroke="#c7d2fe"></rect>
-              <rect x="170" y="498" width="560" height="64" rx="14" fill="#f5f3ff" stroke="#ddd6fe"></rect>
-              <rect x="170" y="580" width="560" height="64" rx="14" fill="#ecfdf5" stroke="#a7f3d0"></rect>
-              <rect x="170" y="662" width="560" height="64" rx="14" fill="#ecfdf5" stroke="#a7f3d0"></rect>
-              <rect x="170" y="744" width="560" height="64" rx="14" fill="#fff7ed" stroke="#fed7aa"></rect>
-              <rect x="170" y="826" width="560" height="64" rx="14" fill="#fff7ed" stroke="#fed7aa"></rect>
-              <rect x="170" y="1200" width="560" height="64" rx="14" fill="#f0fdfa" stroke="#99f6e4"></rect>
-            </g>
-
-            <!-- numbered circles -->
-            <g>
-              <circle cx="202" cy="120" r="15" fill="#ffffff" fill-opacity=".8" stroke="#c7d2fe"></circle>
-              <circle cx="202" cy="202" r="15" fill="#ffffff" fill-opacity=".8" stroke="#c7d2fe"></circle>
-              <circle cx="202" cy="284" r="15" fill="#ffffff" fill-opacity=".8" stroke="#c7d2fe"></circle>
-              <circle cx="202" cy="366" r="15" fill="#ffffff" fill-opacity=".8" stroke="#c7d2fe"></circle>
-              <circle cx="202" cy="448" r="15" fill="#ffffff" fill-opacity=".8" stroke="#c7d2fe"></circle>
-              <circle cx="202" cy="530" r="15" fill="#ffffff" fill-opacity=".8" stroke="#ddd6fe"></circle>
-              <circle cx="202" cy="612" r="15" fill="#ffffff" fill-opacity=".8" stroke="#a7f3d0"></circle>
-              <circle cx="202" cy="694" r="15" fill="#ffffff" fill-opacity=".8" stroke="#a7f3d0"></circle>
-              <circle cx="202" cy="776" r="15" fill="#ffffff" fill-opacity=".8" stroke="#fed7aa"></circle>
-              <circle cx="202" cy="858" r="15" fill="#ffffff" fill-opacity=".8" stroke="#fed7aa"></circle>
-              <circle cx="202" cy="1232" r="15" fill="#ffffff" fill-opacity=".8" stroke="#99f6e4"></circle>
-
-              <text class="node-num" x="202" y="124" text-anchor="middle">1</text>
-              <text class="node-num" x="202" y="206" text-anchor="middle">2</text>
-              <text class="node-num" x="202" y="288" text-anchor="middle">3</text>
-              <text class="node-num" x="202" y="370" text-anchor="middle">4</text>
-              <text class="node-num" x="202" y="452" text-anchor="middle">5</text>
-              <text class="node-num" x="202" y="534" text-anchor="middle">6</text>
-              <text class="node-num" x="202" y="616" text-anchor="middle">7</text>
-              <text class="node-num" x="202" y="698" text-anchor="middle">8</text>
-              <text class="node-num" x="202" y="780" text-anchor="middle">9</text>
-              <text class="node-num" x="202" y="862" text-anchor="middle">10</text>
-              <text class="node-num" x="202" y="1236" text-anchor="middle">13</text>
-            </g>
-
-            <!-- main card text -->
-            <g>
-              <text class="node-title" x="230" y="114">初始化项目</text>
-              <text class="node-sub" x="230" y="133">建立仓库 · README · AGENTS.md</text>
-
-              <text class="node-title" x="230" y="196">形成初始需求</text>
-              <text class="node-sub" x="230" y="215">docs/idea.md：用户故事与功能清单</text>
-
-              <text class="node-title" x="230" y="278">AI 需求评审（DSH）</text>
-              <text class="node-sub" x="230" y="297">从使用者视角找出 8 个 P0 + 3 个 P1 设计缺口</text>
-
-              <text class="node-title" x="230" y="360">人工澄清与产品决策</text>
-              <text class="node-sub" x="230" y="379">填写【我的回答】，确认权限、状态、范围与不做项</text>
-
-              <text class="node-title" x="230" y="442">收敛设计基线</text>
-              <text class="node-sub" x="230" y="461">docs/draft-edited.md，同步更新 AGENTS.md</text>
-
-              <text class="node-title" x="230" y="524">规格化</text>
-              <text class="node-sub" x="230" y="543">docs/prd.md + DESIGN.md：需求与视觉规范</text>
-
-              <text class="node-title" x="230" y="606">AI 全栈实现</text>
-              <text class="node-sub" x="230" y="625">FastAPI + SQLite + uv；React + Vite + TypeScript</text>
-
-              <text class="node-title" x="230" y="688">页面走查与聚焦修改</text>
-              <text class="node-sub" x="230" y="707">导航、登录入口等交互细节优化</text>
-
-              <text class="node-title" x="230" y="770">测试设计</text>
-              <text class="node-sub" x="230" y="789">docs/test-cases.md：152 条用例、权限与退出标准</text>
-
-              <text class="node-title" x="230" y="852">测试执行</text>
-              <text class="node-sub" x="230" y="871">API · Playwright E2E · 并发 · 安全 · UI/NFR</text>
-
-              <text class="node-title" x="230" y="1226">文档与交付收口</text>
-              <text class="node-sub" x="230" y="1245">README · 测试报告 · 最终提交 · 后续迭代入口</text>
-            </g>
-
-            <!-- ===== decision K ===== -->
-            <g filter="url(#soft-shadow)">
-              <polygon points="450,905 690,950 450,995 210,950" fill="#fff7ed" stroke="#f59e0b" stroke-width="1.5"></polygon>
-            </g>
-            <text class="decision-title" x="450" y="945" text-anchor="middle">发现需要修复的缺陷？</text>
-            <text class="decision-sub" x="450" y="963" text-anchor="middle">S2：并发重复申请</text>
-
-            <!-- ===== side cards L / M ===== -->
-            <g filter="url(#soft-shadow)">
-              <rect x="880" y="918" width="380" height="64" rx="14" fill="#fef2f2" stroke="#fecaca"></rect>
-              <rect x="880" y="1000" width="380" height="64" rx="14" fill="#fef2f2" stroke="#fecaca"></rect>
-            </g>
-            <text class="side-title" x="906" y="944">⑪ 缺陷分析与修复</text>
-            <text class="side-sub" x="906" y="962">唯一索引 · BEGIN IMMEDIATE · 旧库迁移</text>
-            <text class="side-title" x="906" y="1026">⑫ 修复复验与回归</text>
-            <text class="side-sub" x="906" y="1044">并发 30/30 通过 · 更新测试报告</text>
-
-            <!-- ===== decision N ===== -->
-            <g filter="url(#soft-shadow)">
-              <polygon points="1070,1085 1220,1125 1070,1165 920,1125" fill="#fff7ed" stroke="#f59e0b" stroke-width="1.5"></polygon>
-            </g>
-            <text class="decision-title" x="1070" y="1121" text-anchor="middle">达到退出标准？</text>
-            <text class="decision-sub" x="1070" y="1139" text-anchor="middle">P0 100% · 无 S1/S2</text>
-
-            <!-- ===== done ===== -->
-            <g filter="url(#soft-shadow)">
-              <rect x="330" y="1290" width="240" height="46" rx="23" fill="#111827"></rect>
-            </g>
-            <text class="start-title" x="450" y="1311" text-anchor="middle">MVP 交付，可继续迭代</text>
-            <text class="start-sub" x="450" y="1325" text-anchor="middle">151 / 152 通过 · 仅 1 个 S4</text>
-          </svg>
-        </div>
-        <div class="chart-note">
-          <strong>读图提示：</strong>
-          <span>主流程按编号 1 → 13 阅读；测试发现缺陷后进入 11 → 12 的修复回路，未达到退出标准时回到修复节点，达标后进入 13 交付收口。</span>
-        </div>
-        <div class="warning-note"><span class="warning-dot" aria-hidden="true"></span>最终留下 1 个 S4 卡片 hover 视觉问题；P0 全部通过，达到项目退出标准。</div>
-      </div>
-    </section>
-
-    <section class="section" id="timeline">
-      <div class="wrap">
-        <div class="section-head">
-          <div>
-            <div class="section-kicker">02 · Git evidence</div>
-            <h2>14 次提交，14 个过程证据</h2>
-            <p class="section-copy">
-              将 Git 时间线和项目文档交叉阅读，可以看到“讨论 → 文档 → 实现 → 验证 → 修复”的完整链条，
-              而不只是最终代码。
-            </p>
-          </div>
-        </div>
-
-        <div class="timeline-grid">
-          <article class="commit-card">
-            <div class="commit-top"><time class="commit-time">08:53</time><span class="phase-chip">立项</span><code class="commit-hash">6f33628</code></div>
-            <h3>初始化项目</h3>
-            <p>建立最小仓库骨架，保留 README 和空的 AGENTS.md，为后续文档驱动开发预留位置。</p>
-          </article>
-
-          <article class="commit-card">
-            <div class="commit-top"><time class="commit-time">09:09</time><span class="phase-chip">需求</span><code class="commit-hash">5929ec8</code></div>
-            <h3>添加 idea 草稿文件</h3>
-            <p>把组队产品创意、核心场景和开发期验证码要求写成可执行的初始需求。</p>
-          </article>
-
-          <article class="commit-card">
-            <div class="commit-top"><time class="commit-time">09:18</time><span class="phase-chip">约束</span><code class="commit-hash">12699ea</code></div>
-            <h3>编写 AGENTS.md</h3>
-            <p>明确技术栈、前后端目录和本阶段范围，并排除 PDF、图片、视频上传功能。</p>
-          </article>
-
-          <article class="commit-card">
-            <div class="commit-top"><time class="commit-time">09:26</time><span class="phase-chip">AI 评审</span><code class="commit-hash">18d0852</code></div>
-            <h3>DSH 从使用者视角评审 Idea</h3>
-            <p>发现用户画像、名额规则、审核流程、联系方式、生命周期等 11 组设计缺口，形成 P0/P1 问题清单。</p>
-          </article>
-
-          <article class="commit-card">
-            <div class="commit-top"><time class="commit-time">09:47</time><span class="phase-chip">人工决策</span><code class="commit-hash">394f915</code></div>
-            <h3>人工编辑 draft 文档</h3>
-            <p>逐项填写【我的回答】，冻结昵称、权限、名额、审核、联系方式等关键业务规则。</p>
-          </article>
-
-          <article class="commit-card design">
-            <div class="commit-top"><time class="commit-time">10:00</time><span class="phase-chip">设计基线</span><code class="commit-hash">dfd26f8</code></div>
-            <h3>多轮讨论生成 draft-edited</h3>
-            <p>删除待确认项和冲突建议，把人工回答整理成可执行的整合版关键设计。</p>
-          </article>
-
-          <article class="commit-card design">
-            <div class="commit-top"><time class="commit-time">10:01</time><span class="phase-chip">上下文</span><code class="commit-hash">b9aad74</code></div>
-            <h3>更新 AGENTS.md 文档索引</h3>
-            <p>将 draft-edited 指定为唯一设计基线，明确旧 draft 不再作为实现依据。</p>
-          </article>
-
-          <article class="commit-card design">
-            <div class="commit-top"><time class="commit-time">10:06</time><span class="phase-chip">PRD</span><code class="commit-hash">b439f86</code></div>
-            <h3>使用 DSH 生成 PRD</h3>
-            <p>把设计基线转成产品需求文档，明确功能范围、页面清单、权限矩阵和 12 条验收标准。</p>
-          </article>
-
-          <article class="commit-card design">
-            <div class="commit-top"><time class="commit-time">10:12</time><span class="phase-chip">视觉规范</span><code class="commit-hash">049dd6e</code></div>
-            <h3>添加 DESIGN.md</h3>
-            <p>补充颜色、字体、组件、间距与交互规范，把产品视觉语言也纳入 AI 上下文。</p>
-          </article>
-
-          <article class="commit-card dev">
-            <div class="commit-top"><time class="commit-time">10:36</time><span class="phase-chip">实现</span><code class="commit-hash">1c8f43c</code></div>
-            <h3>DSH 实现前后端程序</h3>
-            <p>一次提交 49 个文件，完成登录、广场、创建队伍、申请、审核、我的队伍等完整 MVP 闭环。</p>
-          </article>
-
-          <article class="commit-card dev">
-            <div class="commit-top"><time class="commit-time">11:08</time><span class="phase-chip">微调</span><code class="commit-hash">e2c95a6</code></div>
-            <h3>使用 DSH 进行页面修改</h3>
-            <p>页面走查后精简导航中的重复登录入口，体现“生成后仍需人工微调”的真实开发过程。</p>
-          </article>
-
-          <article class="commit-card test">
-            <div class="commit-top"><time class="commit-time">12:52</time><span class="phase-chip">测试设计</span><code class="commit-hash">570a302</code></div>
-            <h3>添加测试用例</h3>
-            <p>设计 152 条测试用例，覆盖主流程、权限与安全、界面、非功能和阶段外功能反向检查。</p>
-          </article>
-
-          <article class="commit-card test">
-            <div class="commit-top"><time class="commit-time">13:23</time><span class="phase-chip">测试执行</span><code class="commit-hash">7972f64</code></div>
-            <h3>执行测试并输出测试报告</h3>
-            <p>通过 API、Playwright E2E、并发、安全、UI 和工程构建检查，输出 151 / 152 通过的测试报告。</p>
-          </article>
-
-          <article class="commit-card fix">
-            <div class="commit-top"><time class="commit-time">13:37</time><span class="phase-chip">修复回归</span><code class="commit-hash">d4d7577</code></div>
-            <h3>修复 S2：并发重复申请</h3>
-            <p>增加部分唯一索引、BEGIN IMMEDIATE 事务串行化与旧库迁移，并完成 30/30 并发复验和报告更新。</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="decisions">
-      <div class="wrap">
-        <div class="section-head">
-          <div>
-            <div class="section-kicker">03 · Human in the loop</div>
-            <h2>对话真正产生了哪些决策</h2>
-            <p class="section-copy">
-              AI 的高价值不只是“写代码”，更在于把模糊想法变成一组需要人回答的问题。
-              下面这些决策构成了后续 PRD、实现和测试的共同基线。
-            </p>
-          </div>
-        </div>
-
-        <div class="decision-grid">
-          <article class="decision-card">
-            <span class="decision-index">01</span>
-            <h3>先冻结范围</h3>
-            <p>附件上传、头像编辑、移动端、活动上下文、站内聊天等均不做；本阶段聚焦桌面端 MVP 和核心组队闭环。</p>
-          </article>
-          <article class="decision-card">
-            <span class="decision-index">02</span>
-            <h3>明确角色与手机号权限</h3>
-            <p>区分游客、登录用户、申请人、成员和队长。手机号只对队长、审核场景和队内成员可见。</p>
-          </article>
-          <article class="decision-card">
-            <span class="decision-index">03</span>
-            <h3>定义队伍生命周期</h3>
-            <p>队长手动完成组队、可重新开放招募、可移除成员；预设名额只是规划参考，不自动阻止审核。</p>
-          </article>
-          <article class="decision-card">
-            <span class="decision-index">04</span>
-            <h3>规范申请与审核</h3>
-            <p>文字介绍必填；拒绝理由选填且对申请人可见；被拒后可重新申请；同一队伍不能出现重复 pending 申请。</p>
-          </article>
-          <article class="decision-card">
-            <span class="decision-index">05</span>
-            <h3>用文档固定 AI 上下文</h3>
-            <p><code>AGENTS.md</code> 持续记录技术栈、目录结构和有效文档；<code>draft-edited.md</code> 成为唯一设计基线。</p>
-          </article>
-          <article class="decision-card">
-            <span class="decision-index">06</span>
-            <h3>用退出标准结束项目</h3>
-            <p>P0 用例 100% 通过、无未关闭 S1/S2、P1 通过率不低于 95%；最终仅保留 1 个非阻塞 S4 视觉问题。</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="takeaways">
-      <div class="wrap">
-        <div class="section-head">
-          <div>
-            <div class="section-kicker">04 · Teaching notes</div>
-            <h2>给学员的 4 个方法结论</h2>
-            <p class="section-copy">比“AI 一次生成了多少代码”更值得复盘的，是项目如何控制模糊性、范围和风险。</p>
-          </div>
-        </div>
-
-        <div class="takeaway-grid">
-          <article class="takeaway-card">
-            <div class="takeaway-number">01</div>
+        <div class="decision-matrix">
+          <article class="decision-card reveal-item">
             <div>
+              <div class="decision-top">
+                <span class="decision-num">01</span>
+                <span class="decision-domain">SCOPE · 范围边界</span>
+              </div>
+              <h3>先冻结范围，明确什么不做</h3>
+              <p>把本阶段聚焦在桌面端 MVP 与核心组队闭环，防止 AI 在实现时过度发挥、引入失控复杂度。</p>
+            </div>
+            <div class="decision-rule">
+              <span class="decision-rule-label">明确不做：</span>附件上传 · 头像编辑 · 移动端适配 · 活动上下文 · 站内聊天
+            </div>
+          </article>
+
+          <article class="decision-card reveal-item">
+            <div>
+              <div class="decision-top">
+                <span class="decision-num">02</span>
+                <span class="decision-domain">PRIVACY · 权限安全</span>
+              </div>
+              <h3>明确角色与手机号可见边界</h3>
+              <p>清晰区分游客、登录用户、申请人、成员和队长五类身份，避免联系方式在广场页被任意泄露。</p>
+            </div>
+            <div class="decision-rule">
+              <span class="decision-rule-label">隐私红线：</span>手机号仅对队长、审核场景与队内成员可见
+            </div>
+          </article>
+
+          <article class="decision-card reveal-item">
+            <div>
+              <div class="decision-top">
+                <span class="decision-num">03</span>
+                <span class="decision-domain">LIFECYCLE · 状态流转</span>
+              </div>
+              <h3>定义队伍生命周期与名额口径</h3>
+              <p>队长可手动完成组队、重新开放招募以及移除成员，贴合黑客松现场灵活调整人手的真实需求。</p>
+            </div>
+            <div class="decision-rule">
+              <span class="decision-rule-label">名额规则：</span>预设名额仅作规划参考，不自动阻止队长审核通过
+            </div>
+          </article>
+
+          <article class="decision-card reveal-item">
+            <div>
+              <div class="decision-top">
+                <span class="decision-num">04</span>
+                <span class="decision-domain">WORKFLOW · 申请审核</span>
+              </div>
+              <h3>规范申请、拒绝与防重复约束</h3>
+              <p>申请必须填写文字介绍；拒绝理由选填且对申请人可见；被拒后允许重新发起申请。</p>
+            </div>
+            <div class="decision-rule">
+              <span class="decision-rule-label">一致性规则：</span>同一用户对同一队伍不能存在重复的 pending 申请
+            </div>
+          </article>
+
+          <article class="decision-card reveal-item">
+            <div>
+              <div class="decision-top">
+                <span class="decision-num">05</span>
+                <span class="decision-domain">CONTEXT · 上下文治理</span>
+              </div>
+              <h3>用仓库文档固定 AI 上下文</h3>
+              <p>不靠口头反复提醒，而是用 <code>AGENTS.md</code> 持续固化技术栈、目录位置与当前有效文档指针。</p>
+            </div>
+            <div class="decision-rule">
+              <span class="decision-rule-label">单一真源：</span>指定 <code>draft-edited.md</code> 为唯一设计基线，显式废弃旧版 draft
+            </div>
+          </article>
+
+          <article class="decision-card reveal-item">
+            <div>
+              <div class="decision-top">
+                <span class="decision-num">06</span>
+                <span class="decision-domain">EXIT CRITERIA · 验收门槛</span>
+              </div>
+              <h3>用客观退出标准结束阶段开发</h3>
+              <p>不靠“看起来差不多”拍脑袋交付，而是预先定义可量化的通过门槛，决定哪些缺陷必须当场修复。</p>
+            </div>
+            <div class="decision-rule">
+              <span class="decision-rule-label">退出门槛：</span>P0 100% 通过 · 无未关闭 S1/S2 · P1 ≥ 95%（仅留 1 个 S4）
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         SLIDE 06 · METHODOLOGICAL TAKEAWAYS (DARK KEYNOTE FINALE)
+         ================================================================= -->
+    <section class="slide slide--finale" id="slide-6" data-slide-index="6">
+      <div class="slide-inner">
+        <div class="slide-rail">
+          <span class="slide-rail-left">
+            <span class="slide-num-pill">06 / 06</span>
+            <span>TEACHING TAKEAWAYS</span>
+          </span>
+          <span>核心总结 · 可迁移的 AI 研发方法论</span>
+        </div>
+
+        <div class="slide-head">
+          <h2 class="slide-title">给学员的 4 个方法结论</h2>
+          <p class="slide-lead">
+            比“AI 一次生成了多少行代码”更值得带走的，是在真实项目里如何控制模糊性、范围蔓延与质量风险。
+          </p>
+        </div>
+
+        <div class="takeaway-matrix">
+          <article class="takeaway-card reveal-item">
+            <div>
+              <div class="takeaway-num">01</div>
               <h3>AI 提问题，人做决策</h3>
-              <p>DSH 以使用者视角补足盲区，但最终由人确认业务规则和本阶段边界。AI 负责扩展选项，人负责做取舍。</p>
+              <p>让 AI 从使用者视角暴露盲区与边界情况，但业务规则、权限红线和本阶段取舍必须由人拍板。</p>
             </div>
+            <div class="takeaway-formula">AI 扩展选项  →  人锁定业务边界</div>
           </article>
-          <article class="takeaway-card">
-            <div class="takeaway-number">02</div>
+
+          <article class="takeaway-card reveal-item">
             <div>
+              <div class="takeaway-num">02</div>
               <h3>文档就是 AI 的上下文契约</h3>
-              <p>Idea、draft-edited、PRD、DESIGN 和 AGENTS 分工明确，避免多份文档冲突，也让实现和测试都有同一依据。</p>
+              <p>Idea、draft-edited、PRD、DESIGN 与 AGENTS 分工明确，避免多份文档互相打架，让实现与测试共享同一依据。</p>
             </div>
+            <div class="takeaway-formula">单一真源文档  →  实现与验收同源</div>
           </article>
-          <article class="takeaway-card">
-            <div class="takeaway-number">03</div>
+
+          <article class="takeaway-card reveal-item">
             <div>
+              <div class="takeaway-num">03</div>
               <h3>分阶段冻结，而不是边写边改</h3>
-              <p>先澄清需求和设计，再生成代码；生成之后再通过页面走查做聚焦修改，避免把产品决策混进实现阶段。</p>
+              <p>先把需求与设计收敛冻结，再让 AI 高效生成全栈代码；生成后再通过页面走查做聚焦微调，不把产品决策混进编码。</p>
             </div>
+            <div class="takeaway-formula">先冻结规格  →  一次成型  →  小步微调</div>
           </article>
-          <article class="takeaway-card">
-            <div class="takeaway-number">04</div>
+
+          <article class="takeaway-card reveal-item">
             <div>
+              <div class="takeaway-num">04</div>
               <h3>测试要形成闭环，而不是只出报告</h3>
-              <p>发现并发重复申请后，继续完成原因分析、数据库约束、事务修复、旧库迁移、并发回归和报告更新。</p>
+              <p>发现 S2 并发重复申请后，继续完成根因分析、数据库唯一约束、事务串行化、旧库迁移、30/30 并发回归与报告更新。</p>
             </div>
+            <div class="takeaway-formula">暴露缺陷  →  底层兜底  →  回归验证达标</div>
           </article>
         </div>
+
+        <footer class="deck-colophon">
+          <div>
+            <strong>HackMate 开发过程复盘</strong><br>
+            证据来源：项目 Git 历史、docs/idea.md、docs/draft-edited.md、docs/prd.md、DESIGN.md、docs/test-cases.md、docs/test-report-2026-11-26.md
+          </div>
+          <div>
+            单文件静态演示网页 · 离线可用<br>
+            流程图为内联 SVG，支持课堂全屏播放与 PDF 打印导出
+          </div>
+        </footer>
       </div>
     </section>
   </main>
 
-  <footer class="footer">
-    <div class="wrap footer-row">
-      <div>
-        <strong>HackMate 开发过程复盘</strong><br>
-        数据来源：项目 Git 历史、docs/idea.md、docs/draft.md、docs/draft-edited.md、docs/prd.md、DESIGN.md、docs/test-cases.md、docs/test-report-2026-11-26.md。
-      </div>
-      <div>
-        静态单文件网页 · 无外部依赖<br>
-        流程图使用内联 SVG 绘制，可直接打开、打印或导出 PDF。
-      </div>
-    </div>
-  </footer>
+  <!-- Floating Classroom Presenter Dock -->
+  <aside class="presenter-dock" aria-label="幻灯片翻页控制">
+    <button class="dock-btn" type="button" id="prev-slide" aria-label="上一节">‹</button>
+    <span class="dock-counter" id="slide-counter" aria-live="off">01 / 06</span>
+    <button class="dock-btn" type="button" id="next-slide" aria-label="下一节">›</button>
+    <span class="dock-hint"><kbd>←</kbd> <kbd>→</kbd> 切换章节</span>
+  </aside>
+
+  <script>
+    (() => {
+      const slides = Array.from(document.querySelectorAll('.slide[data-slide-index]'));
+      const navLinks = Array.from(document.querySelectorAll('[data-slide-link]'));
+      const counterEl = document.getElementById('slide-counter');
+      const prevBtn = document.getElementById('prev-slide');
+      const nextBtn = document.getElementById('next-slide');
+      let currentIdx = 0;
+
+      const formatNum = (n) => String(n).padStart(2, '0');
+
+      const updateActiveSlide = (idx) => {
+        currentIdx = Math.max(0, Math.min(slides.length - 1, idx));
+        const activeId = slides[currentIdx].id;
+
+        if (counterEl) {
+          counterEl.textContent = `${formatNum(currentIdx + 1)} / ${formatNum(slides.length)}`;
+        }
+        if (prevBtn) prevBtn.disabled = currentIdx === 0;
+        if (nextBtn) nextBtn.disabled = currentIdx === slides.length - 1;
+
+        navLinks.forEach((link) => {
+          if (link.dataset.slideLink === activeId) {
+            link.setAttribute('aria-current', 'location');
+          } else {
+            link.removeAttribute('aria-current');
+          }
+        });
+      };
+
+      const jumpToSlide = (idx) => {
+        const clamped = Math.max(0, Math.min(slides.length - 1, idx));
+        const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+        slides[clamped].scrollIntoView({ behavior, block: 'start' });
+        updateActiveSlide(clamped);
+      };
+
+      // Sync active slide indicator on vertical scroll
+      const syncByScroll = () => {
+        const anchor = window.innerHeight * 0.34;
+        let bestIdx = 0;
+        slides.forEach((slide, idx) => {
+          const rect = slide.getBoundingClientRect();
+          if (rect.top <= anchor) {
+            bestIdx = idx;
+          }
+        });
+        updateActiveSlide(bestIdx);
+      };
+
+      let scrollTicking = false;
+      window.addEventListener('scroll', () => {
+        if (!scrollTicking) {
+          scrollTicking = true;
+          requestAnimationFrame(() => {
+            syncByScroll();
+            scrollTicking = false;
+          });
+        }
+      }, { passive: true });
+
+      // Fallback progress bar if scroll-driven animations are not supported
+      const progressEl = document.querySelector('.scroll-progress');
+      if (
+        progressEl &&
+        !CSS.supports('animation-timeline: scroll()') &&
+        window.matchMedia('(prefers-reduced-motion: no-preference)').matches
+      ) {
+        const updateProgress = () => {
+          const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+          const ratio = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
+          progressEl.style.transform = `scaleX(${ratio})`;
+        };
+        window.addEventListener('scroll', updateProgress, { passive: true });
+        window.addEventListener('resize', updateProgress, { passive: true });
+        updateProgress();
+      }
+
+      prevBtn?.addEventListener('click', () => jumpToSlide(currentIdx - 1));
+      nextBtn?.addEventListener('click', () => jumpToSlide(currentIdx + 1));
+
+      // Presenter keyboard shortcuts: Left/Right or [ / ] jump sections without blocking normal Up/Down scrolling
+      document.addEventListener('keydown', (event) => {
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        const tag = document.activeElement?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+        if (event.key === 'ArrowRight' || event.key === ']') {
+          event.preventDefault();
+          jumpToSlide(currentIdx + 1);
+        } else if (event.key === 'ArrowLeft' || event.key === '[') {
+          event.preventDefault();
+          jumpToSlide(currentIdx - 1);
+        }
+      });
+
+      // Top bar print & fullscreen actions
+      document.querySelector('[data-action="print"]')?.addEventListener('click', () => {
+        window.print();
+      });
+
+      const fsBtn = document.querySelector('[data-action="fullscreen"]');
+      if (fsBtn) {
+        if (!document.fullscreenEnabled) {
+          fsBtn.hidden = true;
+        } else {
+          const updateFsLabel = () => {
+            fsBtn.textContent = document.fullscreenElement ? '退出全屏' : '全屏演示';
+          };
+          fsBtn.addEventListener('click', async () => {
+            try {
+              if (!document.fullscreenElement) {
+                await document.documentElement.requestFullscreen();
+              } else {
+                await document.exitFullscreen();
+              }
+            } catch (_) {
+              // Ignore fullscreen rejections
+            }
+          });
+          document.addEventListener('fullscreenchange', updateFsLabel);
+        }
+      }
+
+      // Slide 03: Flowchart Phase Focus Filter
+      const processSvg = document.getElementById('process-svg');
+      const flowButtons = Array.from(document.querySelectorAll('[data-flow-filter]'));
+      flowButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const target = btn.dataset.flowFilter;
+          const isSameActive = target !== 'all' && processSvg?.dataset.activePhase === target;
+          const nextPhase = isSameActive ? 'all' : target;
+
+          if (processSvg) {
+            if (nextPhase === 'all') {
+              delete processSvg.dataset.activePhase;
+            } else {
+              processSvg.dataset.activePhase = nextPhase;
+            }
+          }
+
+          flowButtons.forEach((b) => {
+            b.setAttribute('aria-pressed', String(b.dataset.flowFilter === nextPhase));
+          });
+        });
+      });
+
+      // Slide 04: Git Timeline Phase Filter
+      const gitButtons = Array.from(document.querySelectorAll('[data-git-filter]'));
+      const gitChapters = Array.from(document.querySelectorAll('.git-chapter[data-phase]'));
+      gitButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const target = btn.dataset.gitFilter;
+          gitButtons.forEach((b) => {
+            b.setAttribute('aria-pressed', String(b === btn));
+          });
+          gitChapters.forEach((ch) => {
+            ch.hidden = target !== 'all' && ch.dataset.phase !== target;
+          });
+        });
+      });
+
+      // Honor initial URL hash (e.g. #slide-3) immediately on load
+      if (window.location.hash) {
+        const target = document.querySelector(window.location.hash);
+        if (target) {
+          target.scrollIntoView({ behavior: 'instant', block: 'start' });
+        }
+      }
+
+      syncByScroll();
+    })();
+  </script>
 </body>
 </html>
